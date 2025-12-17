@@ -187,8 +187,9 @@ namespace Garage_2._0.Controllers
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
-            if (viewModel.WantReceipt) {
-                //return View(nameof(receipt)) --------------------------------------------------------------
+            if (viewModel.WantReceipt) 
+            {
+                return View(nameof(Receipt));
             }
 
             return RedirectToAction(nameof(Index));
@@ -197,6 +198,20 @@ namespace Garage_2._0.Controllers
         private bool VehicleExists(int id)
         {
             return _context.Vehicle.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Receipt(int id)
+        {
+            var vehicle = await _context.Vehicle.FindAsync(id);
+
+            if (vehicle is null)
+                return NotFound();
+
+            ReceiptViewModel viewModel = new() {
+                Vehicle = vehicle
+            };
+
+            return View(viewModel);
         }
     }
 }

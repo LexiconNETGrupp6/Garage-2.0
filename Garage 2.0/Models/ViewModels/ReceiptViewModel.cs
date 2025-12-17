@@ -8,7 +8,7 @@ namespace Garage_2._0.Models.ViewModels
         public Vehicle Vehicle { get; set; }
 
         [DisplayName("Time at checkout")]
-        public DateTime CheckOutTime { get; set; }
+        public DateTime CheckOutTime { get; set; } = DateTime.Now;
 
         [Range(5, 200)]
         [DisplayName("Hourly price")]
