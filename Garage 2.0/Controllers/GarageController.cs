@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 using Garage_2._0.Data;
+using Garage_2._0.Models.ViewModels;
 
 namespace Garage_2._0.Controllers
 {
@@ -130,7 +131,7 @@ namespace Garage_2._0.Controllers
         }
 
         // GET: Garage/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Checkout(int? id)
         {
             if (id == null)
             {
@@ -144,15 +145,21 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            return View(vehicle);
+            DeleteVehicleViewModel viewModel = new() {
+                Id = vehicle.Id,
+                RegNumber = vehicle.RegNumber,
+                VehicleType = vehicle.VehicleType
+            };
+
+            return View(viewModel);
         }
 
         // POST: Garage/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Checkout")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
             if (vehicle != null)
             {
                 _context.Vehicle.Remove(vehicle);
@@ -160,6 +167,12 @@ namespace Garage_2._0.Controllers
 
             await _context.SaveChangesAsync();
             TempData["Success"] = "Vehicle checked out successfully.";
+
+            // If the user wants a receipt
+            if (viewModel.WantReceipt) {
+                //return View(nameof(receipt)) --------------------------------------------------------------
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
