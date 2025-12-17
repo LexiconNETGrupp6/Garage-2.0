@@ -67,12 +67,31 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
+            var reg = vehicle.RegNumber?.Trim().ToUpper();
+
+            if (string.IsNullOrWhiteSpace(reg))
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
+            }
+            else
+            {
+                vehicle.RegNumber = reg;
+
+                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg);
+                if (exists)
+                {
+                    ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Vehicle checked in successfully.";
                 return RedirectToAction(nameof(Index));
             }
+
             return View(vehicle);
         }
 
