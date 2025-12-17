@@ -2,7 +2,7 @@
 
 <h2 class="text-center">Check out @Model.VehicleType - @Model.RegNumber</h2>
 
-<div class="container">
+<div class="container card shadow-sm">
     You are about to checkout a(n) @Model.VehicleType with license number @Model.RegNumber
 
     <form asp-action="Checkout">
@@ -16,6 +16,6 @@
             </label>
         </div>
         <input type="submit" value="Check out" class="btn btn-danger" /> |
-        <a asp-action="Index">Go back</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Go back</a>
     </form>
 </div>

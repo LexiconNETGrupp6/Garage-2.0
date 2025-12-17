@@ -16,7 +16,7 @@
                         <form asp-action="Create" method="post">
                             @Html.AntiForgeryToken()
 
-                            <div class="mb-3">
+                            <div class="form-check mb-3">
                                 <label asp-for="RegNumber" class="form-label"></label>
                                 <input asp-for="RegNumber" class="form-control text-uppercase" />
                                 <span asp-validation-for="RegNumber" class="text-danger"></span>
