@@ -15,7 +15,7 @@ namespace Garage_2._0.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Garage");
         }
 
         public IActionResult Privacy()

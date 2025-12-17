@@ -18,6 +18,7 @@ namespace Garage_2._0.Controllers
             _context = context;
         }
 
+
         // GET: Garage
         public async Task<IActionResult> Index(string? search)
         {
