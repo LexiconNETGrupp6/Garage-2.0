@@ -70,6 +70,7 @@ namespace Garage_2._0.Controllers
             {
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Vehicle checked in successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
@@ -109,6 +110,7 @@ namespace Garage_2._0.Controllers
                 {
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -156,6 +158,7 @@ namespace Garage_2._0.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Vehicle checked out successfully.";
             return RedirectToAction(nameof(Index));
         }
 
