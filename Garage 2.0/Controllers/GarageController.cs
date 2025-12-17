@@ -19,9 +19,19 @@ namespace Garage_2._0.Controllers
         }
 
         // GET: Garage
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search)
         {
-            return View(await _context.Vehicle.ToListAsync());
+            ViewData["CurrentFilter"] = search;
+
+            var query = _context.Vehicle.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                query = query.Where(v => v.RegNumber.Contains(search));
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Garage/Details/5
