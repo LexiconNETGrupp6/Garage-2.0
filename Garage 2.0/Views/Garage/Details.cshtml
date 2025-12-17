@@ -1,0 +1,16 @@
+﻿@model Garage_2._0.Models.Vehicle
+
+<h2>Vehicle Details</h2>
+
+<div class="card" style="width: 400px;">
+    <div class="card-body">
+        <h5 class="card-title">@Model.VehicleType - @Model.RegNumber</h5>
+        <p class="card-text"><strong>Brand:</strong> @Model.Brand</p>
+        <p class="card-text"><strong>Model:</strong> @Model.Model</p>
+        <p class="card-text"><strong>Color:</strong> @Model.Color</p>
+        <p class="card-text"><strong>Number of Wheels:</strong> @Model.NumberOfWheels</p>
+        <p class="card-text"><strong>Arrival Time:</strong> @Model.ArrivalTime.ToString("g")</p>
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to Overview</a>
