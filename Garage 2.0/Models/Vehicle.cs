@@ -25,6 +25,6 @@ namespace Garage_2._0.Models
         [Range(0, 50)]
         public int NumberOfWheels { get; set; }
 
-        public DateTime ArrivalTime { get; set; }
+        public DateTime ArrivalTime { get; } = DateTime.Now;
     }
 }
