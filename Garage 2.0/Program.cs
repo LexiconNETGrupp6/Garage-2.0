@@ -1,3 +1,4 @@
+using Garage_2._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 namespace Garage_2._0
