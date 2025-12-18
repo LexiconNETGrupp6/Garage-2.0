@@ -124,6 +124,21 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
+            var reg = vehicle.RegNumber?.Trim().ToUpper();
+            if (string.IsNullOrWhiteSpace(reg))
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
+            }
+            else
+            {
+                vehicle.RegNumber = reg;
+                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
+                if (exists)
+                {
+                    ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
