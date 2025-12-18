@@ -93,6 +93,13 @@ namespace Garage_2._0.Controllers
                 }
             }
 
+            if (ModelState.IsValid)
+            {
+                _context.Add(vehicle);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Vehicle checked in successfully.";
+                return RedirectToAction(nameof(Index));
+            }
 
             return View(vehicle);
         }
