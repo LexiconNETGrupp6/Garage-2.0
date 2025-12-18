@@ -69,14 +69,6 @@ namespace Garage_2._0.Controllers
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
             }
-            else if (reg.Length < 2)
-            {
-                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
-            }
-            else if (reg.Length > 7)
-            {
-                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
-            }
             else
             {
                 vehicle.RegNumber = reg;
@@ -141,30 +133,6 @@ namespace Garage_2._0.Controllers
             else
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
-            }
-
-            var reg = vehicle.RegNumber?.Trim().ToUpper();
-
-            if (string.IsNullOrWhiteSpace(reg))
-            {
-                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
-            }
-            else if (reg.Length < 2)
-            {
-                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
-            }
-            else if (reg.Length > 7)
-            {
-                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
-            }
-            else
-            {
-                vehicle.RegNumber = reg;
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
-                if (exists)
-                {
-                    ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
-                }
             }
 
             if (ModelState.IsValid)
