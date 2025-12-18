@@ -87,6 +87,7 @@ namespace Garage_2._0.Controllers
 
             if (ModelState.IsValid)
             {
+                vehicle.ArrivalTime = DateTime.Now;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Vehicle checked in successfully.";
