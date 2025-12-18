@@ -1,0 +1,33 @@
+﻿@model ReceiptViewModel
+
+@{
+    double hours = Math.Floor(Model.ParkedDuration.TotalHours);
+    double minutes = Math.Floor(Model.ParkedDuration.TotalMinutes);
+}
+
+<div class="container">
+    <h2>Receipt for Parking</h2>
+    <div class="card p-3" style="width: 50%;">
+        <h5 class="card-title">Receipt For @Model.VehicleRegNumber</h5>
+        <p class="card-text"><strong>Vehicle Type: </strong>@Model.VehicleType</p>
+        <p class="card-text"><strong>Arrival Time: </strong>@Model.ArrivalTime</p>
+        <p class="card-text"><strong>Checkout Time: </strong>@Model.CheckOutTime</p>
+        <p class="card-text"><strong>Parked for: </strong>
+            @if (hours > 0) 
+            {
+                @hours <span>hours</span>
+            }
+            @if (minutes > 0)
+            {
+                @minutes <span>Minutes</span>
+            }
+            else
+            {
+                @Math.Round(Model.ParkedDuration.TotalSeconds) <span>Seconds</span>
+            }
+        </p>
+        <p class="card-text"><strong>Total Cost: </strong>@Math.Round(Model.TotalPrice, digits: 2) kr</p>
+    </div>
+
+    <a asp-action="Index">Back to start</a>
+</div>
