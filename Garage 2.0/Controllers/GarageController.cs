@@ -1,8 +1,9 @@
+using Garage_2._0.Data;
+using Garage_2._0.Models;
+using Garage_2._0.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Garage_2._0.Models;
-using Garage_2._0.Data;
-using Garage_2._0.Models.ViewModels;
+using System.Diagnostics;
 
 namespace Garage_2._0.Controllers
 {
@@ -15,6 +16,16 @@ namespace Garage_2._0.Controllers
             _context = context;
         }
 
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
 
         // GET: Garage
         public async Task<IActionResult> Index(string? search)
