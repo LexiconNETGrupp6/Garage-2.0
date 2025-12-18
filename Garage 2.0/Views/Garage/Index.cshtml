@@ -4,6 +4,20 @@
     ViewData["Title"] = "Garage";
 }
 
+@section CustomStyles {
+    <style>
+        th:not(.text-end)::after {
+            content: "↕";
+            float: right;
+            margin-right: 2em;
+        }
+
+        th:not(.text-end):hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
 <form asp-action="Index" method="get" class="row g-2 mb-4">
     <div class="input-group col-md-12 shadow-sm">
         <span class="input-group-text">

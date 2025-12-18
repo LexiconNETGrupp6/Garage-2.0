@@ -15,7 +15,6 @@ namespace Garage_2._0.Controllers
             _context = context;
         }
 
-
         // GET: Garage
         public async Task<IActionResult> Index(string? search)
         {
@@ -30,6 +29,15 @@ namespace Garage_2._0.Controllers
             }
 
             return View(await query.ToListAsync());
+        }
+
+        public async Task<IActionResult> SortVehicles(string attribute)
+        {
+            var vehicles = await _context.Vehicle.ToListAsync();
+
+            // Sort based on attribute
+
+            return RedirectToAction(nameof(Index), vehicles);
         }
 
         // GET: Garage/Details/5
