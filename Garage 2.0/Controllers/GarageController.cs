@@ -19,10 +19,6 @@ namespace Garage_2._0.Controllers
         // GET: Garage
         public async Task<IActionResult> Index(string? search)
         {
-
-            //await Seed();
-
-
             ViewData["CurrentFilter"] = search;
 
             var query = _context.Vehicle.AsQueryable();
@@ -206,17 +202,6 @@ namespace Garage_2._0.Controllers
         public IActionResult Receipt(ReceiptViewModel viewModel)
         {
             return View(viewModel);
-        }
-
-        private async Task Seed()
-        {
-            _context.Vehicle.Add(new Vehicle { RegNumber = "ABC123", VehicleType = VehicleType.Car, Color = "Red", Brand = "Volvo", Model = "V70", NumberOfWheels = 4 });
-            _context.Vehicle.Add(new Vehicle { RegNumber = "LGH436", VehicleType = VehicleType.Boat, Color = "Yellow", Brand = "East Marine", Model = "Viking Line", NumberOfWheels = 0 });
-            _context.Vehicle.Add(new Vehicle { RegNumber = "AHC745", VehicleType = VehicleType.Bus, Color = "Red", Brand = "Volvo", Model = "V7900", NumberOfWheels = 8 });
-            _context.Vehicle.Add(new Vehicle { RegNumber = "KAK156", VehicleType = VehicleType.Car, Color = "White", Brand = "Teesla", Model = "X", NumberOfWheels = 4 });
-            _context.Vehicle.Add(new Vehicle { RegNumber = "IKA71U", VehicleType = VehicleType.Truck, Color = "Blue", Brand = "Scania", Model = "G-series", NumberOfWheels = 6 });
-            _context.Vehicle.Add(new Vehicle { RegNumber = "ÅJAUIV", VehicleType = VehicleType.Motorcycle, Color = "Green", Brand = "Mercedez", Model = "L420", NumberOfWheels = 2 });
-            await _context.SaveChangesAsync();
         }
     }
 }
