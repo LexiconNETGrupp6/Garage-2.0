@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using Garage_2._0.Data;
 using Garage_2._0.Models;
-using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage_2._0.Controllers
 {
@@ -24,6 +19,10 @@ namespace Garage_2._0.Controllers
         // GET: Garage
         public async Task<IActionResult> Index(string? search)
         {
+
+            //await Seed();
+
+
             ViewData["CurrentFilter"] = search;
 
             var query = _context.Vehicle.AsQueryable();
@@ -147,8 +146,7 @@ namespace Garage_2._0.Controllers
             }
             return View(vehicle);
         }
-
-        // GET: Garage/Delete/5
+        
         public async Task<IActionResult> Checkout(int? id)
         {
             if (id == null)
@@ -161,7 +159,7 @@ namespace Garage_2._0.Controllers
             if (vehicle == null)
             {
                 return NotFound();
-            }
+            }            
 
             DeleteVehicleViewModel viewModel = new() {
                 Id = vehicle.Id,
@@ -178,21 +176,26 @@ namespace Garage_2._0.Controllers
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
             var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
-            if (vehicle != null)
+            if (vehicle is null)
             {
-                _context.Vehicle.Remove(vehicle);
+                return NotFound();
             }
 
+            ReceiptViewModel receiptViewModel = new() {
+                VehicleRegNumber = vehicle.RegNumber,
+                VehicleType = vehicle.VehicleType,
+                ArrivalTime = vehicle.ArrivalTime
+            };
+
+            _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
-            if (viewModel.WantReceipt) 
-            {
-                return View(nameof(Receipt));
-            }
-
-            return RedirectToAction(nameof(Index));
+            if (viewModel.WantReceipt)             
+                return RedirectToAction(nameof(Receipt), receiptViewModel);            
+            else 
+                return RedirectToAction(nameof(Index));
         }
 
         private bool VehicleExists(int id)
@@ -200,18 +203,20 @@ namespace Garage_2._0.Controllers
             return _context.Vehicle.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> Receipt(int id)
+        public IActionResult Receipt(ReceiptViewModel viewModel)
         {
-            var vehicle = await _context.Vehicle.FindAsync(id);
-
-            if (vehicle is null)
-                return NotFound();
-
-            ReceiptViewModel viewModel = new() {
-                Vehicle = vehicle
-            };
-
             return View(viewModel);
+        }
+
+        private async Task Seed()
+        {
+            _context.Vehicle.Add(new Vehicle { RegNumber = "ABC123", VehicleType = VehicleType.Car, Color = "Red", Brand = "Volvo", Model = "V70", NumberOfWheels = 4 });
+            _context.Vehicle.Add(new Vehicle { RegNumber = "LGH436", VehicleType = VehicleType.Boat, Color = "Yellow", Brand = "East Marine", Model = "Viking Line", NumberOfWheels = 0 });
+            _context.Vehicle.Add(new Vehicle { RegNumber = "AHC745", VehicleType = VehicleType.Bus, Color = "Red", Brand = "Volvo", Model = "V7900", NumberOfWheels = 8 });
+            _context.Vehicle.Add(new Vehicle { RegNumber = "KAK156", VehicleType = VehicleType.Car, Color = "White", Brand = "Teesla", Model = "X", NumberOfWheels = 4 });
+            _context.Vehicle.Add(new Vehicle { RegNumber = "IKA71U", VehicleType = VehicleType.Truck, Color = "Blue", Brand = "Scania", Model = "G-series", NumberOfWheels = 6 });
+            _context.Vehicle.Add(new Vehicle { RegNumber = "ÅJAUIV", VehicleType = VehicleType.Motorcycle, Color = "Green", Brand = "Mercedez", Model = "L420", NumberOfWheels = 2 });
+            await _context.SaveChangesAsync();
         }
     }
 }
