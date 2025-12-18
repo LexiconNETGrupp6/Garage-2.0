@@ -1,11 +1,14 @@
-﻿@model IEnumerable<Vehicle>
+@model IEnumerable<Vehicle>
 
 @{
     ViewData["Title"] = "Garage";
 }
 
-<form asp-action="Index" method="get" class="mb-3">
-    <div class="input-group">
+<form asp-action="Index" method="get" class="row g-2 mb-4">
+    <div class="input-group col-md-12 shadow-sm">
+        <span class="input-group-text">
+            🔍
+        </span>
         <input type="text"
                name="search"
                value="@ViewData["CurrentFilter"]"
@@ -13,21 +16,21 @@
                placeholder="Search by registration number..." />
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
-    </div>
+    </div>    
 </form>
-
 
 <p>
     <a asp-action="Create" class="btn btn-success">Check in vehicle</a>
 </p>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark>
         <tr>
             <th>Type</th>
             <th>RegNumber</th>
             <th>ArrivalTime</th>
-            <th></th>
+            <th>Duration</th>
+            <th class="text-end"></th>
         </tr>
     </thead>
     <tbody>
@@ -37,6 +40,12 @@
                 <td>@v.VehicleType</td>
                 <td>@v.RegNumber</td>
                 <td>@v.ArrivalTime</td>
+                <td>@{
+                    var duration = DateTime.Now - v.ArrivalTime;
+                    var days = (int)duration.TotalDays;
+                    var timePart = duration.ToString(@"hh\:mm\:ss");
+                    @((days > 0 ? $"{days}d " : "") + timePart)
+                }</td>
                 <td class="text-end">
                     <a asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outline-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-warning">Edit</a>

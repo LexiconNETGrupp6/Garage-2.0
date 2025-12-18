@@ -1,0 +1,43 @@
+﻿@model ReceiptViewModel
+
+@section CustomStyles {
+    <style>
+        .card-text {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dotted black;
+        }
+    </style>
+}
+
+@{
+    double hours = Math.Floor(Model.ParkedDuration.TotalHours);
+    double minutes = Math.Floor(Model.ParkedDuration.TotalMinutes);
+}
+
+<div class="container-sm">
+    <h2>Receipt for Parking</h2>
+    <div class="card p-3" style="width: 25em;">
+        <h5 class="card-title">Receipt For @Model.VehicleRegNumber</h5>
+        <p class="card-text"><strong>Vehicle Type: </strong><span class="text-end">@Model.VehicleType</span></p>
+        <p class="card-text"><strong>Arrival Time: </strong><span class="text-end">@Model.ArrivalTime</span></p>
+        <p class="card-text"><strong>Checkout Time: </strong><span class="text-end">@Model.CheckOutTime</span></p>
+        <p class="card-text"><strong>Parked for: </strong>
+            @if (hours > 0) 
+            {
+                <span class="text-end">@hours hours</span>
+            }
+            else @if (minutes > 0)
+            {
+                <span class="text-end">@minutes Minutes</span>
+            }
+            else
+            {
+                <span class="text-end">@Math.Round(Model.ParkedDuration.TotalSeconds) Seconds</span>
+            }
+        </p>
+        <p class="card-text"><strong>Total Cost: </strong><span class="text-end">@Math.Round(Model.TotalPrice, digits: 2) kr</span></p>
+    </div>
+
+    <a asp-action="Index" class="btn btn-sm btn-outline-info mt-3 w-25">Back to start</a>
+</div>

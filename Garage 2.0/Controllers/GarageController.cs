@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 using Garage_2._0.Data;
@@ -143,8 +143,7 @@ namespace Garage_2._0.Controllers
             }
             return View(vehicle);
         }
-
-        // GET: Garage/Delete/5
+        
         public async Task<IActionResult> Checkout(int? id)
         {
             if (id == null)
@@ -157,7 +156,7 @@ namespace Garage_2._0.Controllers
             if (vehicle == null)
             {
                 return NotFound();
-            }
+            }            
 
             DeleteVehicleViewModel viewModel = new() {
                 Id = vehicle.Id,
@@ -174,25 +173,36 @@ namespace Garage_2._0.Controllers
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
             var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
-            if (vehicle != null)
+            if (vehicle is null)
             {
-                _context.Vehicle.Remove(vehicle);
+                return NotFound();
             }
 
+            ReceiptViewModel receiptViewModel = new() {
+                VehicleRegNumber = vehicle.RegNumber,
+                VehicleType = vehicle.VehicleType,
+                ArrivalTime = vehicle.ArrivalTime
+            };
+
+            _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
-            if (viewModel.WantReceipt) {
-                //return View(nameof(receipt)) --------------------------------------------------------------
-            }
-
-            return RedirectToAction(nameof(Index));
+            if (viewModel.WantReceipt)             
+                return RedirectToAction(nameof(Receipt), receiptViewModel);            
+            else 
+                return RedirectToAction(nameof(Index));
         }
 
         private bool VehicleExists(int id)
         {
             return _context.Vehicle.Any(e => e.Id == id);
+        }
+
+        public IActionResult Receipt(ReceiptViewModel viewModel)
+        {
+            return View(viewModel);
         }
     }
 }
