@@ -74,6 +74,14 @@ namespace Garage_2._0.Controllers
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
             }
+            else if (reg.Length < 2)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
+            }
+            else if (reg.Length > 7)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
+            }
             else
             {
                 vehicle.RegNumber = reg;
@@ -85,13 +93,6 @@ namespace Garage_2._0.Controllers
                 }
             }
 
-            if (ModelState.IsValid)
-            {
-                _context.Add(vehicle);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Vehicle checked in successfully.";
-                return RedirectToAction(nameof(Index));
-            }
 
             return View(vehicle);
         }
@@ -125,9 +126,18 @@ namespace Garage_2._0.Controllers
             }
 
             var reg = vehicle.RegNumber?.Trim().ToUpper();
+
             if (string.IsNullOrWhiteSpace(reg))
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
+            }
+            else if (reg.Length < 2)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
+            }
+            else if (reg.Length > 7)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
             }
             else
             {
