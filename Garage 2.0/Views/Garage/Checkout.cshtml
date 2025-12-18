@@ -1,0 +1,21 @@
+﻿@model DeleteVehicleViewModel
+
+<h2 class="text-center">Check out @Model.VehicleType - @Model.RegNumber</h2>
+
+<div class="container">
+    You are about to checkout a(n) @Model.VehicleType with license number @Model.RegNumber
+
+    <form asp-action="Checkout">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="RegNumber" />
+        <input type="hidden" asp-for="VehicleType" />
+        <div class="form-group">
+            <label class="control-label">
+                <input type="checkbox" asp-for="WantReceipt" />
+                I want a receipt
+            </label>
+        </div>
+        <input type="submit" value="Check out" class="btn btn-danger" /> |
+        <a asp-action="Index">Go back</a>
+    </form>
+</div>
