@@ -1,4 +1,4 @@
-@model IEnumerable<Vehicle>
+@model IEnumerable<VehicleViewModel>
 
 @{
     ViewData["Title"] = "Garage";
@@ -25,7 +25,7 @@
             width: 70%;
             height: 100%;
         }
-    </style>    
+    </style>
 }
 
 @section Scripts {
@@ -49,7 +49,7 @@
                placeholder="Search by registration number..." />
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
-    </div>    
+    </div> 
 </form>
 
 <p>
@@ -74,12 +74,10 @@
                 <td>@v.VehicleType</td>
                 <td>@v.RegNumber</td>
                 <td>@v.ArrivalTime</td>
-                <td>@{
-                    var duration = DateTime.Now - v.ArrivalTime;
-                    var days = (int)duration.TotalDays;
-                    var timePart = duration.ToString(@"hh\:mm\:ss");
-                    @((days > 0 ? $"{days}d " : "") + timePart)
-                }</td>
+                <td>
+                    @{v.UpdateParkDuration();}
+                    @v.ParkDuration
+                </td>
                 <td class="text-end">
                     <a asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outline-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-warning">Edit</a>
