@@ -32,7 +32,14 @@ namespace Garage_2._0.Controllers
                 query = SortVehicles(sortOrder, query);
             }
 
-            return View(await query.ToListAsync());
+            IEnumerable<VehicleViewModel> viewModels = query.Select(v => new VehicleViewModel {
+                Id = v.Id,
+                VehicleType = v.VehicleType,
+                RegNumber = v.RegNumber,
+                ArrivalTime = v.ArrivalTime,
+            });
+
+            return View(viewModels);
         }
 
         public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
