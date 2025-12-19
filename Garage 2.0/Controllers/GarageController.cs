@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
+using Garage_2._0.ConstantStrings;
 
 namespace Garage_2._0.Controllers
 {
@@ -26,11 +27,7 @@ namespace Garage_2._0.Controllers
             {
                 search = search.Trim();
                 query = query.Where(v => v.RegNumber.Contains(search));
-            }
-
-            if (!string.IsNullOrWhiteSpace(sortOrder)) {
-                query = SortVehicles(sortOrder, query);
-            }
+            }            
 
             IEnumerable<VehicleViewModel> viewModels = query.Select(v => new VehicleViewModel {
                 Id = v.Id,
@@ -39,36 +36,40 @@ namespace Garage_2._0.Controllers
                 ArrivalTime = v.ArrivalTime,
             });
 
+            if (!string.IsNullOrWhiteSpace(sortOrder)) {
+                viewModels = SortVehicles(sortOrder, viewModels);
+            }
+
             return View(viewModels);
         }
 
-        public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
+        public IEnumerable<VehicleViewModel> SortVehicles(string sortOrder, IEnumerable<VehicleViewModel> vehicles)
         {
-            var date = DateTime.Now;
-            // Sort based on attribute
-            switch (sordOrder) {
-                case "type":
-                    vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
-                    break;
-                case "reg-number":
-                    vehicles = vehicles.OrderBy(v => v.RegNumber);
-                    break;
-                case "arrival-time":
-                    vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
-                    break;
-                case "duration":
-                    // Attempts at getting this sorting to work.
-                    // Keeps throwing error that it convert DateTime operations into SQL
+            // Flips a stored bool to switch between Ascending and Descening order
+            VehicleViewModel.VehicleSortCategories[sortOrder] = !VehicleViewModel.VehicleSortCategories[sortOrder];
 
-                    //vehicles = vehicles.OrderBy(v => DateTime.Now - v.ArrivalTime);
-                    //vehicles = from v in vehicles orderby DateTime.Now.Subtract(v.ArrivalTime) select v;
-                    
-                    //var durations = vehicles.Select(v => new { v.Id, Duration = (date - v.ArrivalTime).ToString() });
-                    //vehicles = vehicles.OrderBy(v => durations.First(d => d.Id == v.Id).Duration);
+            Func<VehicleViewModel, string> condition;
+            var dateNow = DateTime.Now;
+            switch (sortOrder) {
+                case VehicleViewModelSortingCategories.VehicleType:
+                    condition = (v => v.VehicleType.ToString());
                     break;
+                case VehicleViewModelSortingCategories.RegNumber:
+                    condition = (v => v.RegNumber);
+                    break;
+                case VehicleViewModelSortingCategories.ArrivalTime:
+                    condition = (v => v.ArrivalTime.ToString());
+                    break;
+                case VehicleViewModelSortingCategories.Duration:
+                    // Doesn't use UpdateParkedDuration() or Parkduration because each vehicle would have
+                    // a different baseline since DateTime.Now keeps changing during the loop.
+                    condition = (v => dateNow.Subtract(v.ArrivalTime).ToString());
+                    break;
+                default:
+                    return vehicles;
             }
 
-            return vehicles;
+            return VehicleViewModel.Sort(vehicles, condition, VehicleViewModel.VehicleSortCategories[sortOrder]);
         }
 
         // GET: Garage/Details/5
