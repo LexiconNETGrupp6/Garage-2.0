@@ -11,6 +11,13 @@ namespace Garage_2._0.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<DateTime>(
+                name: "ArrivalTime",
+                table: "Vehicle",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
             migrationBuilder.UpdateData(
                 table: "Vehicle",
                 keyColumn: "Id",
