@@ -16,7 +16,7 @@ namespace Garage_2._0.Controllers
         }
 
         // GET: Garage
-        public async Task<IActionResult> Index(string? search)
+        public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
             ViewData["CurrentFilter"] = search;
 
@@ -28,16 +28,40 @@ namespace Garage_2._0.Controllers
                 query = query.Where(v => v.RegNumber.Contains(search));
             }
 
+            if (!string.IsNullOrWhiteSpace(sortOrder)) {
+                query = SortVehicles(sortOrder, query);
+            }
+
             return View(await query.ToListAsync());
         }
 
-        public async Task<IActionResult> SortVehicles(string attribute)
+        public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
         {
-            var vehicles = await _context.Vehicle.ToListAsync();
-
+            var date = DateTime.Now;
             // Sort based on attribute
+            switch (sordOrder) {
+                case "type":
+                    vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
+                    break;
+                case "reg-number":
+                    vehicles = vehicles.OrderBy(v => v.RegNumber);
+                    break;
+                case "arrival-time":
+                    vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
+                    break;
+                case "duration":
+                    // Attempts at getting this sorting to work.
+                    // Keeps throwing error that it convert DateTime operations into SQL
 
-            return RedirectToAction(nameof(Index), vehicles);
+                    //vehicles = vehicles.OrderBy(v => DateTime.Now - v.ArrivalTime);
+                    //vehicles = from v in vehicles orderby DateTime.Now.Subtract(v.ArrivalTime) select v;
+                    
+                    //var durations = vehicles.Select(v => new { v.Id, Duration = (date - v.ArrivalTime).ToString() });
+                    //vehicles = vehicles.OrderBy(v => durations.First(d => d.Id == v.Id).Duration);
+                    break;
+            }
+
+            return vehicles;
         }
 
         // GET: Garage/Details/5
