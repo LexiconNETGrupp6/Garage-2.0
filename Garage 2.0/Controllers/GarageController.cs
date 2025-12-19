@@ -130,10 +130,6 @@ namespace Garage_2._0.Controllers
             
             var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
-            if (!string.IsNullOrEmpty(reg)) {
-                
-            }
-
             if (string.IsNullOrWhiteSpace(reg))
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
