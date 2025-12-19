@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 using Garage_2._0.Data;
@@ -20,9 +15,8 @@ namespace Garage_2._0.Controllers
             _context = context;
         }
 
-
         // GET: Garage
-        public async Task<IActionResult> Index(string? search)
+        public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
             ViewData["CurrentFilter"] = search;
 
@@ -34,7 +28,40 @@ namespace Garage_2._0.Controllers
                 query = query.Where(v => v.RegNumber.Contains(search));
             }
 
+            if (!string.IsNullOrWhiteSpace(sortOrder)) {
+                query = SortVehicles(sortOrder, query);
+            }
+
             return View(await query.ToListAsync());
+        }
+
+        public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
+        {
+            var date = DateTime.Now;
+            // Sort based on attribute
+            switch (sordOrder) {
+                case "type":
+                    vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
+                    break;
+                case "reg-number":
+                    vehicles = vehicles.OrderBy(v => v.RegNumber);
+                    break;
+                case "arrival-time":
+                    vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
+                    break;
+                case "duration":
+                    // Attempts at getting this sorting to work.
+                    // Keeps throwing error that it convert DateTime operations into SQL
+
+                    //vehicles = vehicles.OrderBy(v => DateTime.Now - v.ArrivalTime);
+                    //vehicles = from v in vehicles orderby DateTime.Now.Subtract(v.ArrivalTime) select v;
+                    
+                    //var durations = vehicles.Select(v => new { v.Id, Duration = (date - v.ArrivalTime).ToString() });
+                    //vehicles = vehicles.OrderBy(v => durations.First(d => d.Id == v.Id).Duration);
+                    break;
+            }
+
+            return vehicles;
         }
 
         // GET: Garage/Details/5
@@ -68,11 +95,19 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
-            var reg = vehicle.RegNumber?.Trim().ToUpper();
+            var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
             if (string.IsNullOrWhiteSpace(reg))
             {
                 ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
+            }
+            else if (reg.Length < 2)
+            {
+               ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
+            }
+            else if (reg.Length > 7)
+            {
+               ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
             }
             else
             {
@@ -87,6 +122,7 @@ namespace Garage_2._0.Controllers
 
             if (ModelState.IsValid)
             {
+                vehicle.ArrivalTime = DateTime.Now;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Vehicle checked in successfully.";
@@ -117,11 +153,35 @@ namespace Garage_2._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, Vehicle vehicle)
         {
             if (id != vehicle.Id)
             {
                 return NotFound();
+            }
+            
+            var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
+
+            if (string.IsNullOrWhiteSpace(reg))
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number is required.");
+            }
+            else if (reg.Length < 2)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number must be at least 2 characters long.");
+            }
+            else if (reg.Length > 7)
+            {
+                ModelState.AddModelError(nameof(vehicle.RegNumber), "Registration number cannot exceed 7 characters.");
+            }
+            else
+            {
+                vehicle.RegNumber = reg;
+                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
+                if (exists)
+                {
+                    ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
+                }
             }
 
             if (ModelState.IsValid)
@@ -147,8 +207,7 @@ namespace Garage_2._0.Controllers
             }
             return View(vehicle);
         }
-
-        // GET: Garage/Delete/5
+        
         public async Task<IActionResult> Checkout(int? id)
         {
             if (id == null)
@@ -161,7 +220,7 @@ namespace Garage_2._0.Controllers
             if (vehicle == null)
             {
                 return NotFound();
-            }
+            }            
 
             DeleteVehicleViewModel viewModel = new() {
                 Id = vehicle.Id,
@@ -178,25 +237,36 @@ namespace Garage_2._0.Controllers
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
             var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
-            if (vehicle != null)
+            if (vehicle is null)
             {
-                _context.Vehicle.Remove(vehicle);
+                return NotFound();
             }
 
+            ReceiptViewModel receiptViewModel = new() {
+                VehicleRegNumber = vehicle.RegNumber,
+                VehicleType = vehicle.VehicleType,
+                ArrivalTime = vehicle.ArrivalTime
+            };
+
+            _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
-            if (viewModel.WantReceipt) {
-                //return View(nameof(receipt)) --------------------------------------------------------------
-            }
-
-            return RedirectToAction(nameof(Index));
+            if (viewModel.WantReceipt)             
+                return RedirectToAction(nameof(Receipt), receiptViewModel);            
+            else 
+                return RedirectToAction(nameof(Index));
         }
 
         private bool VehicleExists(int id)
         {
             return _context.Vehicle.Any(e => e.Id == id);
+        }
+
+        public IActionResult Receipt(ReceiptViewModel viewModel)
+        {
+            return View(viewModel);
         }
     }
 }
