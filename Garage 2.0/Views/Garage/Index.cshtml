@@ -7,14 +7,8 @@
 
 @section CustomStyles {
     <style>
-        th:not(#table-buttons):not(#table-durations)::after {
-            content: "↕";
-            float: right;
-            margin-right: 2em;
-            margin-top: 0.5em;
-        }
-
-        th:not(#table-buttons):not(#table-durations):hover {
+        /* Targets 'th' elements that have an 'a' child */
+       th:has(a):hover {
             cursor: pointer;
             filter: brightness(1.3);
             text-decoration: underline;
@@ -25,8 +19,11 @@
             color: inherit;
             padding: inherit;
             display: inline-block;
-            width: 70%;
-            height: 100%;
+            padding: 1em !important;
+        }
+
+        th {
+            padding: 0 !important;
         }
     </style>
 }
@@ -64,30 +61,34 @@
         <tr>
             <th>
                 <a asp-action="Index" 
-                    asp-route-search="@ViewData["CurrentFilter"]" 
-                    asp-route-sortOrder="@VehicleViewModelSortingCategories.VehicleType">
-                        Type
+                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@VehicleViewModelSortingCategories.VehicleType" 
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.VehicleType)</span><span>↕</span>
                 </a>
             </th>
             <th>
                 <a asp-action="index" 
-                    asp-route-search="@ViewData["CurrentFilter"]" 
-                    asp-route-sortOrder="@VehicleViewModelSortingCategories.RegNumber">
-                        RegNumber
+                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@VehicleViewModelSortingCategories.RegNumber" 
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
                     </a>
                 </th>
             <th>
                 <a asp-action="Index" 
                     asp-route-search="@ViewData["CurrentFilter"]" 
-                    asp-route-sortOrder="@VehicleViewModelSortingCategories.ArrivalTime">
-                        ArrivalTime
+                    asp-route-sortOrder="@VehicleViewModelSortingCategories.ArrivalTime"
+                    class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
                 </a>
             </th>
             <th>
                 <a asp-action="Index" 
                     asp-route-search="@ViewData["CurrentFilter"]" 
-                    asp-route-sortOrder="@VehicleViewModelSortingCategories.Duration">
-                        Duration
+                    asp-route-sortOrder="@VehicleViewModelSortingCategories.Duration"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
                 </a>
             </th>
             <th id="table-buttons" class="text-end"></th>
