@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    [Migration("20251218091502_RemoveAutoValueFromArrivalTime")]
-    partial class RemoveAutoValueFromArrivalTime
+    [Migration("20251218133835_NerGarageSetup")]
+    partial class NerGarageSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

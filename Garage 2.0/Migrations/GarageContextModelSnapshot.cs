@@ -61,7 +61,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vehicle", (string)null);
+                    b.ToTable("Vehicle");
 
                     b.HasData(
                         new
