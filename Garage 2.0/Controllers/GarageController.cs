@@ -26,11 +26,7 @@ namespace Garage_2._0.Controllers
             {
                 search = search.Trim();
                 query = query.Where(v => v.RegNumber.Contains(search));
-            }
-
-            if (!string.IsNullOrWhiteSpace(sortOrder)) {
-                query = SortVehicles(sortOrder, query);
-            }
+            }            
 
             IEnumerable<VehicleViewModel> viewModels = query.Select(v => new VehicleViewModel {
                 Id = v.Id,
@@ -39,35 +35,28 @@ namespace Garage_2._0.Controllers
                 ArrivalTime = v.ArrivalTime,
             });
 
+            if (!string.IsNullOrWhiteSpace(sortOrder)) {
+                viewModels = SortVehicles(sortOrder, viewModels);
+            }
+
             return View(viewModels);
         }
 
-        public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
+        public IEnumerable<VehicleViewModel> SortVehicles(string sordOrder, IEnumerable<VehicleViewModel> vehicles)
         {
-            var date = DateTime.Now;
-            // Sort based on attribute
+            var dateNow = DateTime.Now;
             switch (sordOrder) {
                 case "type":
-                    vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
-                    break;
+                    return vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
                 case "reg-number":
-                    vehicles = vehicles.OrderBy(v => v.RegNumber);
-                    break;
+                    return vehicles = vehicles.OrderBy(v => v.RegNumber);
                 case "arrival-time":
-                    vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
-                    break;
+                    return vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
                 case "duration":
-                    // Attempts at getting this sorting to work.
-                    // Keeps throwing error that it convert DateTime operations into SQL
-
-                    //vehicles = vehicles.OrderBy(v => DateTime.Now - v.ArrivalTime);
-                    //vehicles = from v in vehicles orderby DateTime.Now.Subtract(v.ArrivalTime) select v;
-                    
-                    //var durations = vehicles.Select(v => new { v.Id, Duration = (date - v.ArrivalTime).ToString() });
-                    //vehicles = vehicles.OrderBy(v => durations.First(d => d.Id == v.Id).Duration);
-                    break;
+                    // Doesn't use UpdateParkedDuration() or Parkduration because each vehicle would have
+                    // a different baseline since DateTime.Now keeps changing during the loop.
+                    return vehicles = vehicles.OrderBy(v => dateNow.Subtract(v.ArrivalTime));
             }
-
             return vehicles;
         }
 
