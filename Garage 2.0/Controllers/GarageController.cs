@@ -275,5 +275,21 @@ namespace Garage_2._0.Controllers
         {
             return View(viewModel);
         }
+        public IActionResult Statistics()
+        {
+            var vehicles = _context.Vehicle.ToList();
+            GarageStatisticsViewModel stats = new GarageStatisticsViewModel
+            {
+                TotalVehicles = vehicles.Count,
+                TotalWheels = vehicles.Sum(v => v.NumberOfWheels),
+                VehiclesByType = vehicles
+                .GroupBy(v => v.VehicleType)
+                .ToDictionary(g => g.Key, g => g.Count()),
+                EstimatedRevenue = vehicles.Sum(v =>
+                (DateTime.Now - v.ArrivalTime).TotalHours * 30)
+            };
+            
+            return View(stats);
+        }
     }
 }
