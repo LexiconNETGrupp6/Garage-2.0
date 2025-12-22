@@ -27,7 +27,7 @@ namespace Garage_2._0.Controllers
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
 
-            var query = _context.Vehicle.AsNoTracking().AsQueryable();
+            var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -272,9 +272,9 @@ namespace Garage_2._0.Controllers
         {
             return View(viewModel);
         }
-        public IActionResult Statistics()
+        public async Task<IActionResult> Statistics()
         {
-            var vehicles = _context.Vehicle.ToList();
+            var vehicles = await _vehicleRepository.ToListAsync();
             GarageStatisticsViewModel stats = new GarageStatisticsViewModel
             {
                 TotalVehicles = vehicles.Count,
