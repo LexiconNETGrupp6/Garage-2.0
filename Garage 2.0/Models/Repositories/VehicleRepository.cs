@@ -36,10 +36,13 @@ namespace Garage_2._0.Models.Repositories
         public async Task<bool> AnyAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
             => await _context.Vehicle.AnyAsync(predicate, token);
 
-        public async Task<Vehicle?> FirstOrDefaultAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) =>
-            await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
+        public async Task<Vehicle?> FirstOrDefaultAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) 
+            => await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
 
-        public async Task<Vehicle?> FindAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) =>
-            await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
+        public async Task<Vehicle?> FindAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) 
+            => await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
+
+        public async Task<Vehicle?> FindAsync(params object?[]? keyValues) 
+            => await _context.Vehicle.FindAsync(keyValues);
     }
 }
