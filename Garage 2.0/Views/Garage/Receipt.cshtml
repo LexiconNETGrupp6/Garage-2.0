@@ -1,4 +1,5 @@
-﻿@model ReceiptViewModel
+﻿@using System.Globalization
+@model ReceiptViewModel
 
 @section CustomStyles {
     <style>
@@ -36,7 +37,7 @@
                 <span class="text-end">@Math.Round(Model.ParkedDuration.TotalSeconds) Seconds</span>
             }
         </p>
-        <p class="card-text"><strong>Total Cost: </strong><span class="text-end">@Math.Round(Model.TotalPrice, digits: 2) kr</span></p>
+        <p class="card-text"><strong>Total Cost: </strong><span class="text-end">@Model.TotalPrice.ToString("C", CultureInfo.CreateSpecificCulture("se-SE"))</span></p>
     </div>
 
     <a asp-action="Index" class="btn btn-sm btn-outline-info mt-3 w-25">Back to start</a>
