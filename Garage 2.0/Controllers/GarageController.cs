@@ -1,11 +1,12 @@
+using Garage_2._0.ConstantStrings;
+using Garage_2._0.Data;
+using Garage_2._0.Models;
+using Garage_2._0.Models.Repositories;
+using Garage_2._0.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Garage_2._0.Models;
-using Garage_2._0.Data;
-using Garage_2._0.Models.ViewModels;
-using Garage_2._0.ConstantStrings;
-using Garage_2._0.Models.Repositories;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NuGet.Protocol.Core.Types;
 
 namespace Garage_2._0.Controllers
 {
@@ -21,7 +22,7 @@ namespace Garage_2._0.Controllers
         // GET: Garage
         public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
-            int occupiedSpots = _context.Vehicle.Count();
+            int occupiedSpots = _vehicleRepository.Count();
             int availableSpots = TotalParkingSpots - occupiedSpots;
 
             ViewBag.AvailableSpots = availableSpots;
@@ -121,7 +122,7 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
-            int occupiedSpots = await _context.Vehicle.CountAsync();
+            int occupiedSpots = await _vehicleRepository.CountAsync();
             if (occupiedSpots >= TotalParkingSpots)
             {
                 ModelState.AddModelError("", "Garage is full. No available parking spots.");
