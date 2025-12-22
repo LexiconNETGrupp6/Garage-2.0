@@ -27,11 +27,18 @@ namespace Garage_2._0.Controllers
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
 
             var query = _context.Vehicle.AsNoTracking().AsQueryable();
-
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var s = search.Trim().Replace(" ", "").ToUpper();
-                query = query.Where(v => v.RegNumber.Contains(s));
+                var s = search.Trim();
+
+                var sReg = s.Replace(" ", "").ToUpper();
+
+                query = query.Where(v =>
+                    v.RegNumber.Contains(sReg) ||
+                    v.Brand.Contains(s) ||
+                    v.Model.Contains(s) ||
+                    v.Color.Contains(s)
+                );
             }
 
             query = sortOrder switch
@@ -59,6 +66,7 @@ namespace Garage_2._0.Controllers
                     Id = v.Id,
                     VehicleType = v.VehicleType,
                     RegNumber = v.RegNumber,
+                    Brand = v.Brand,
                     ArrivalTime = v.ArrivalTime,
                 })
                 .ToListAsync();

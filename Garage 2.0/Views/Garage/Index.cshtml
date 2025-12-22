@@ -45,7 +45,7 @@
                name="search"
                value="@ViewData["CurrentFilter"]"
                class="form-control"
-               placeholder="Search by registration number..." />
+               placeholder="Search by reg number, brand, model or color..." />
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
     </div> 
@@ -72,8 +72,14 @@
                    asp-route-sortOrder="@(ViewData["RegSort"] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
-                    </a>
-                </th>
+                </a>
+            </th>
+            <th>
+                <span class="d-flex justify-content-between w-100 h-100" style="padding:1em;">
+                    <span>@Html.DisplayNameFor(model => model.Brand)</span>
+                </span>
+            </th>
+
             <th>
                 <a asp-action="Index" 
                     asp-route-search="@ViewData["CurrentFilter"]"
@@ -99,6 +105,7 @@
             <tr>
                 <td>@v.VehicleType</td>
                 <td>@v.RegNumber</td>
+                <td>@v.Brand</td>
                 <td>@v.ArrivalTime</td>
                 <td>
                     @v.ParkDuration
