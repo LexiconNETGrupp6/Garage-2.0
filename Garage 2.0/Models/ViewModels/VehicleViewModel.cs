@@ -17,6 +17,7 @@ namespace Garage_2._0.Models.ViewModels
 
         [DisplayName("Time of Arrival")]
         public DateTime ArrivalTime { get; set; }
+        public int ParkingSpot { get; set; }
 
         [DisplayName("Parking Duration")]
         public String ParkDuration { get; private set; } = string.Empty;

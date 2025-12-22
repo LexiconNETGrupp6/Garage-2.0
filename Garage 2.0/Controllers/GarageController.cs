@@ -29,8 +29,8 @@ namespace Garage_2._0.Controllers
             ViewBag.TotalSpots = TotalParkingSpots;
 
 
-            ViewData["CurrentFilter"] = search;
-
+            ViewData["CurrentFilter"] = search;            
+           
             ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
             ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
@@ -60,6 +60,7 @@ namespace Garage_2._0.Controllers
                     RegNumber = v.RegNumber,
                     Brand = v.Brand,
                     ArrivalTime = v.ArrivalTime,
+                    ParkingSpot = v.ParkingSpot
                 })
                 .ToListAsync();
 
@@ -122,6 +123,18 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
+            var usedSpots = _vehicleRepository.Vehicles.Select(v => v.ParkingSpot).ToList();
+            var freeSpot = Enumerable.Range(1, TotalParkingSpots)
+                         .Except(usedSpots)
+                         .FirstOrDefault();
+            if (freeSpot == 0)
+            {
+                ModelState.AddModelError("", "Sorry, the garage is full!");
+                return View(vehicle);
+            }
+
+            vehicle.ParkingSpot = freeSpot;
+
             int occupiedSpots = await _vehicleRepository.CountAsync();
             if (occupiedSpots >= TotalParkingSpots)
             {
@@ -157,7 +170,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.ArrivalTime = DateTime.Now;
                 await _vehicleRepository.Add(vehicle);
-                TempData["Success"] = "Vehicle checked in successfully.";
+                TempData["Success"] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
                 return RedirectToAction(nameof(Index));
             }
 
