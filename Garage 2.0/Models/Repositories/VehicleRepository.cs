@@ -31,18 +31,39 @@ namespace Garage_2._0.Models.Repositories
         {
             _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
+            var a = await _context.Vehicle.ToListAsync();
         }
+
+        public List<Vehicle> ToList()
+            => _context.Vehicle.ToList();
+
+        public async Task<List<Vehicle>> ToListAsync()
+            => await _context.Vehicle.ToListAsync();
 
         public async Task<bool> AnyAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
             => await _context.Vehicle.AnyAsync(predicate, token);
 
-        public async Task<Vehicle?> FirstOrDefaultAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) 
+        public async Task<Vehicle?> FirstOrDefaultAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
             => await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
 
-        public async Task<Vehicle?> FindAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) 
+        public async Task<Vehicle?> FindAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
             => await _context.Vehicle.FirstOrDefaultAsync(predicate, token);
 
-        public async Task<Vehicle?> FindAsync(params object?[]? keyValues) 
+        public async Task<Vehicle?> FindAsync(params object?[]? keyValues)
             => await _context.Vehicle.FindAsync(keyValues);
+
+        public IQueryable<Vehicle> AsNoTracking()
+            => _context.Vehicle.AsNoTracking();
+
+        public int Count() 
+            => _context.Vehicle.Count();
+
+        public int Count(Func<Vehicle, bool> predicate) 
+            => _context.Vehicle.Count(predicate);
+        public async Task<int> CountAsync() 
+            => await _context.Vehicle.CountAsync();
+
+        public async Task<int> CountAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
+            => await _context.Vehicle.CountAsync(predicate, token);
     }
 }
