@@ -4,16 +4,17 @@ using Garage_2._0.Models;
 using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
 using Garage_2._0.ConstantStrings;
+using Garage_2._0.Models.Repositories;
 
 namespace Garage_2._0.Controllers
 {
     public class GarageController : Controller
     {
-        private readonly GarageContext _context;
+        private readonly IVehicleRepository _vehicleRepository;
 
-        public GarageController(GarageContext context)
+        public GarageController(IVehicleRepository repository)
         {
-            _context = context;
+            _vehicleRepository = repository;
         }
 
         // GET: Garage
@@ -21,7 +22,7 @@ namespace Garage_2._0.Controllers
         {
             ViewData["CurrentFilter"] = search;
 
-            var query = _context.Vehicle.AsQueryable();
+            var query = _vehicleRepository.Vehicles.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -49,7 +50,6 @@ namespace Garage_2._0.Controllers
             VehicleViewModel.VehicleSortCategories[sortOrder] = !VehicleViewModel.VehicleSortCategories[sortOrder];
 
             Func<VehicleViewModel, string> condition;
-            var dateNow = DateTime.Now;
             switch (sortOrder) {
                 case VehicleViewModelSortingCategories.VehicleType:
                     condition = (v => v.VehicleType.ToString());
@@ -63,6 +63,7 @@ namespace Garage_2._0.Controllers
                 case VehicleViewModelSortingCategories.Duration:
                     // Doesn't use UpdateParkedDuration() or Parkduration because each vehicle would have
                     // a different baseline since DateTime.Now keeps changing during the loop.
+                    var dateNow = DateTime.Now;
                     condition = (v => dateNow.Subtract(v.ArrivalTime).ToString());
                     break;
                 default:
@@ -79,8 +80,8 @@ namespace Garage_2._0.Controllers
             {
                 return NotFound();
             }
-
-            var vehicle = await _context.Vehicle
+            
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -121,7 +122,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.RegNumber = reg;
 
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -131,8 +132,7 @@ namespace Garage_2._0.Controllers
             if (ModelState.IsValid)
             {
                 vehicle.ArrivalTime = DateTime.Now;
-                _context.Add(vehicle);
-                await _context.SaveChangesAsync();
+                await _vehicleRepository.Add(vehicle);
                 TempData["Success"] = "Vehicle checked in successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -148,7 +148,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _vehicleRepository.FindAsync(id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -185,7 +185,7 @@ namespace Garage_2._0.Controllers
             else
             {
                 vehicle.RegNumber = reg;
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -196,13 +196,12 @@ namespace Garage_2._0.Controllers
             {
                 try
                 {
-                    _context.Update(vehicle);
-                    await _context.SaveChangesAsync();
+                    await _vehicleRepository.Update(vehicle);
                     TempData["Success"] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleExists(vehicle.Id))
+                    if (!await VehicleExists(vehicle.Id))
                     {
                         return NotFound();
                     }
@@ -223,7 +222,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -244,7 +243,7 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
-            var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
+            var vehicle = await _vehicleRepository.FindAsync(viewModel.Id);
             if (vehicle is null)
             {
                 return NotFound();
@@ -256,8 +255,7 @@ namespace Garage_2._0.Controllers
                 ArrivalTime = vehicle.ArrivalTime
             };
 
-            _context.Vehicle.Remove(vehicle);
-            await _context.SaveChangesAsync();
+            await _vehicleRepository.Remove(vehicle);
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
@@ -267,9 +265,9 @@ namespace Garage_2._0.Controllers
                 return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleExists(int id)
+        private async Task<bool> VehicleExists(int id)
         {
-            return _context.Vehicle.Any(e => e.Id == id);
+            return await _vehicleRepository.AnyAsync(e => e.Id == id);
         }
 
         public IActionResult Receipt(ReceiptViewModel viewModel)
