@@ -22,56 +22,54 @@ namespace Garage_2._0.Controllers
         {
             ViewData["CurrentFilter"] = search;
 
-            var query = _vehicleRepository.Vehicles.AsQueryable();
+            ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
+            ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
+            ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
+            ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
+
+            var query = _context.Vehicle.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search = search.Trim();
-                query = query.Where(v => v.RegNumber.Contains(search));
-            }            
-
-            IEnumerable<VehicleViewModel> viewModels = query.Select(v => new VehicleViewModel {
-                Id = v.Id,
-                VehicleType = v.VehicleType,
-                RegNumber = v.RegNumber,
-                ArrivalTime = v.ArrivalTime,
-            });
-
-            if (!string.IsNullOrWhiteSpace(sortOrder)) {
-                viewModels = SortVehicles(sortOrder, viewModels);
+                var s = search.Trim().Replace(" ", "").ToUpper();
+                query = query.Where(v => v.RegNumber.Contains(s));
             }
+
+            query = sortOrder switch
+            {
+                "type" => query.OrderBy(v => v.VehicleType),
+                "type_desc" => query.OrderByDescending(v => v.VehicleType),
+
+                "reg" => query.OrderBy(v => v.RegNumber),
+                "reg_desc" => query.OrderByDescending(v => v.RegNumber),
+
+                "arrival" => query.OrderBy(v => v.ArrivalTime),
+                "arrival_desc" => query.OrderByDescending(v => v.ArrivalTime),
+
+                // duration: shortest first => newest arrival first
+                "duration" => query.OrderByDescending(v => v.ArrivalTime),
+                // duration_desc: longest first => oldest arrival first
+                "duration_desc" => query.OrderBy(v => v.ArrivalTime),
+
+                _ => query.OrderBy(v => v.RegNumber),
+            };
+
+            var viewModels = await query
+                .Select(v => new VehicleViewModel
+                {
+                    Id = v.Id,
+                    VehicleType = v.VehicleType,
+                    RegNumber = v.RegNumber,
+                    ArrivalTime = v.ArrivalTime,
+                })
+                .ToListAsync();
+
+            foreach (var vm in viewModels)
+                vm.UpdateParkDuration();
 
             return View(viewModels);
         }
 
-        public IEnumerable<VehicleViewModel> SortVehicles(string sortOrder, IEnumerable<VehicleViewModel> vehicles)
-        {
-            // Flips a stored bool to switch between Ascending and Descening order
-            VehicleViewModel.VehicleSortCategories[sortOrder] = !VehicleViewModel.VehicleSortCategories[sortOrder];
-
-            Func<VehicleViewModel, string> condition;
-            switch (sortOrder) {
-                case VehicleViewModelSortingCategories.VehicleType:
-                    condition = (v => v.VehicleType.ToString());
-                    break;
-                case VehicleViewModelSortingCategories.RegNumber:
-                    condition = (v => v.RegNumber);
-                    break;
-                case VehicleViewModelSortingCategories.ArrivalTime:
-                    condition = (v => v.ArrivalTime.ToString());
-                    break;
-                case VehicleViewModelSortingCategories.Duration:
-                    // Doesn't use UpdateParkedDuration() or Parkduration because each vehicle would have
-                    // a different baseline since DateTime.Now keeps changing during the loop.
-                    var dateNow = DateTime.Now;
-                    condition = (v => dateNow.Subtract(v.ArrivalTime).ToString());
-                    break;
-                default:
-                    return vehicles;
-            }
-
-            return VehicleViewModel.Sort(vehicles, condition, VehicleViewModel.VehicleSortCategories[sortOrder]);
-        }
 
         // GET: Garage/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -273,6 +271,22 @@ namespace Garage_2._0.Controllers
         public IActionResult Receipt(ReceiptViewModel viewModel)
         {
             return View(viewModel);
+        }
+        public IActionResult Statistics()
+        {
+            var vehicles = _context.Vehicle.ToList();
+            GarageStatisticsViewModel stats = new GarageStatisticsViewModel
+            {
+                TotalVehicles = vehicles.Count,
+                TotalWheels = vehicles.Sum(v => v.NumberOfWheels),
+                VehiclesByType = vehicles
+                .GroupBy(v => v.VehicleType)
+                .ToDictionary(g => g.Key, g => g.Count()),
+                EstimatedRevenue = vehicles.Sum(v =>
+                (DateTime.Now - v.ArrivalTime).TotalHours * 30)
+            };
+            
+            return View(stats);
         }
     }
 }
