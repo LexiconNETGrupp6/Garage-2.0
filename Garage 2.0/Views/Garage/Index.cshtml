@@ -93,7 +93,7 @@
 
             <th>
                 <a asp-action="Index" 
-                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData["CurrentFilter"]"
                    asp-route-sortOrder="@(ViewData["ArrivalSort"] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
@@ -101,16 +101,20 @@
             </th>
             <th>
                 <a asp-action="Index" 
-                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData["CurrentFilter"]"
                    asp-route-sortOrder="@(ViewData["DurationSort"] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
                 </a>
             </th>
-          <th>
-              <a asp-action="Index" 
-              asp-route-search="@ViewData["CurrentFilter"]" 
-              asp-route-sortOrder="ParkingSpot">ParkingSpot</a></th>
+            <th>
+                <a asp-action="Index" 
+                   asp-route-search="@ViewData["CurrentFilter"]" 
+                   asp-route-sortOrder="@(ViewData["SpotSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.ParkingSpot)</span><span>↕</span>
+                </a>
+            </th>
             <th id="table-buttons" class="text-end"></th>
         </tr>
     </thead>

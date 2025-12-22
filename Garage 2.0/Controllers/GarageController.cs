@@ -36,6 +36,7 @@ namespace Garage_2._0.Controllers
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
             ViewData["BrandSort"] = sortOrder == "brand" ? "brand_desc" : "brand";
+            ViewData["SpotSort"] = sortOrder == "spot" ? "spot_desc" : "spot";
 
             var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
@@ -81,6 +82,9 @@ namespace Garage_2._0.Controllers
 
                 "brand" => viewModels.OrderBy(v => v.Brand),
                 "brand_desc" => viewModels.OrderByDescending(v => v.Brand),
+
+                "spot" => viewModels.OrderBy(v => v.ParkingSpot),
+                "spot_desc" => viewModels.OrderByDescending(v => v.ParkingSpot),
 
                 _ => viewModels.OrderBy(v => v.RegNumber),
             };            
