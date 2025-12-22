@@ -27,7 +27,7 @@ namespace Garage_2._0.Controllers
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
 
-var query = _vehicleRepository.AsNoTracking().AsQueryable();
+            var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
