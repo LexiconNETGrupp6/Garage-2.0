@@ -5,6 +5,7 @@ using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
 using Garage_2._0.ConstantStrings;
 using Garage_2._0.Models.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Garage_2._0.Controllers
 {
@@ -26,6 +27,7 @@ namespace Garage_2._0.Controllers
             ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
+            ViewData["BrandSort"] = sortOrder == "brand" ? "brand_desc" : "brand";
 
             var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
@@ -53,8 +55,7 @@ namespace Garage_2._0.Controllers
                 })
                 .ToListAsync();
 
-            viewModels = sortOrder switch
-            {
+            viewModels = sortOrder switch {
                 "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
                 "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
 
@@ -68,6 +69,9 @@ namespace Garage_2._0.Controllers
                 "duration" => viewModels.OrderByDescending(v => v.ArrivalTime),
                 // duration_desc: longest first => oldest arrival first
                 "duration_desc" => viewModels.OrderBy(v => v.ArrivalTime),
+
+                "brand" => viewModels.OrderBy(v => v.Brand),
+                "brand_desc" => viewModels.OrderByDescending(v => v.Brand),
 
                 _ => viewModels.OrderBy(v => v.RegNumber),
             };            

@@ -75,9 +75,12 @@
                 </a>
             </th>
             <th>
-                <span class="d-flex justify-content-between w-100 h-100" style="padding:1em;">
-                    <span>@Html.DisplayNameFor(model => model.Brand)</span>
-                </span>
+                <a asp-action="Index"
+                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["BrandSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.Brand)</span><span>↕</span>
+                </a>
             </th>
 
             <th>
