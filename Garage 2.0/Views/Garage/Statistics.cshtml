@@ -1,4 +1,5 @@
-﻿@model Garage_2._0.Models.ViewModels.GarageStatisticsViewModel
+﻿@using System.Globalization
+@model Garage_2._0.Models.ViewModels.GarageStatisticsViewModel
 <h2 class="mb-4">Garage Statistics</h2>
 
 <div class="d-flex gap-4">
@@ -9,7 +10,7 @@
         <strong>Total wheels:</strong> @Model.TotalWheels
     </div>
     <div class="alert alert-info">
-        <strong>Estimated Revenue:</strong> @Model.EstimatedRevenue.ToString("0.00") SEK
+        <strong>Estimated Revenue:</strong> @Model.EstimatedRevenue.ToString("C", CultureInfo.CreateSpecificCulture("se-SE"))
     </div>
 </div>
 
