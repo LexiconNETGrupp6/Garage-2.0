@@ -1,5 +1,4 @@
-﻿using Garage_2._0.ConstantStrings;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace Garage_2._0.Models.ViewModels
 {
@@ -12,6 +11,9 @@ namespace Garage_2._0.Models.ViewModels
 
         [DisplayName("Registration Number")]
         public string RegNumber { get; set; } = string.Empty;
+
+        [DisplayName("Brand")]
+        public string Brand { get; set; } = string.Empty;
 
         [DisplayName("Time of Arrival")]
         public DateTime ArrivalTime { get; set; }
