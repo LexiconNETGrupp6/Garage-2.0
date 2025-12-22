@@ -45,8 +45,8 @@ namespace Garage_2._0.Controllers
 
             viewModels = sortOrder switch
             {
-                "type" => viewModels.OrderBy(v => v.VehicleType),
-                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType),
+                "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
 
                 "reg" => viewModels.OrderBy(v => v.RegNumber),
                 "reg_desc" => viewModels.OrderByDescending(v => v.RegNumber),
