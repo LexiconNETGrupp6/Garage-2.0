@@ -9,7 +9,7 @@ namespace Garage_2._0.Controllers
     public class GarageController : Controller
     {
         private readonly GarageContext _context;
-
+        private const int TotalParkingSpots = 10;
         public GarageController(GarageContext context)
         {
             _context = context;
@@ -18,6 +18,13 @@ namespace Garage_2._0.Controllers
         // GET: Garage
         public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
+            int occupiedSpots = _context.Vehicle.Count();
+            int availableSpots = TotalParkingSpots - occupiedSpots;
+
+            ViewBag.AvailableSpots = availableSpots;
+            ViewBag.TotalSpots = TotalParkingSpots;
+
+
             ViewData["CurrentFilter"] = search;
 
             var query = _context.Vehicle.AsQueryable();
@@ -102,6 +109,12 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
+            int occupiedSpots = await _context.Vehicle.CountAsync();
+            if (occupiedSpots >= TotalParkingSpots)
+            {
+                ModelState.AddModelError("", "Garage is full. No available parking spots.");
+            }
+
             var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
             if (string.IsNullOrWhiteSpace(reg))

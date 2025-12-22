@@ -4,6 +4,10 @@
     ViewData["Title"] = "Garage";
 }
 
+@{
+    int available = ViewBag.AvailableSpots;
+}
+
 @section CustomStyles {
     <style>
         th:not(#table-buttons):not(#table-durations)::after {
@@ -52,6 +56,10 @@
     </div> 
 </form>
 
+<p style="font-size:1.2em;">
+    Available parking spots:
+    <strong style="color:@(available > 0 ? "green" : "red")">@ViewBag.AvailableSpots</strong> / @ViewBag.TotalSpots
+</p>
 <p>
     <a asp-action="Create" class="btn btn-success">Check in vehicle</a>
 </p>
