@@ -36,8 +36,8 @@ namespace Garage_2._0.Controllers
 
             query = sortOrder switch
             {
-                "type" => query.OrderBy(v => v.VehicleType.ToString()),
-                "type_desc" => query.OrderByDescending(v => v.VehicleType.ToString()),
+                "type" => query.OrderBy(v => Convert.ToString(v.VehicleType)),
+                "type_desc" => query.OrderByDescending(v => Convert.ToString(v.VehicleType)),
 
                 "reg" => query.OrderBy(v => v.RegNumber),
                 "reg_desc" => query.OrderByDescending(v => v.RegNumber),
