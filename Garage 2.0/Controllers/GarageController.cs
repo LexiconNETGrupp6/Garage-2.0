@@ -35,34 +35,33 @@ namespace Garage_2._0.Controllers
                 query = query.Where(v => v.RegNumber.Contains(s));
             }
 
-            query = sortOrder switch
-            {
-                "type" => query.OrderBy(v => v.VehicleType),
-                "type_desc" => query.OrderByDescending(v => v.VehicleType),
-
-                "reg" => query.OrderBy(v => v.RegNumber),
-                "reg_desc" => query.OrderByDescending(v => v.RegNumber),
-
-                "arrival" => query.OrderBy(v => v.ArrivalTime),
-                "arrival_desc" => query.OrderByDescending(v => v.ArrivalTime),
-
-                // duration: shortest first => newest arrival first
-                "duration" => query.OrderByDescending(v => v.ArrivalTime),
-                // duration_desc: longest first => oldest arrival first
-                "duration_desc" => query.OrderBy(v => v.ArrivalTime),
-
-                _ => query.OrderBy(v => v.RegNumber),
-            };
-
-            var viewModels = await query
-                .Select(v => new VehicleViewModel
-                {
+            IEnumerable<VehicleViewModel> viewModels = await query
+                .Select(v => new VehicleViewModel {
                     Id = v.Id,
                     VehicleType = v.VehicleType,
                     RegNumber = v.RegNumber,
                     ArrivalTime = v.ArrivalTime,
                 })
                 .ToListAsync();
+
+            viewModels = sortOrder switch
+            {
+                "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
+
+                "reg" => viewModels.OrderBy(v => v.RegNumber),
+                "reg_desc" => viewModels.OrderByDescending(v => v.RegNumber),
+
+                "arrival" => viewModels.OrderBy(v => v.ArrivalTime),
+                "arrival_desc" => viewModels.OrderByDescending(v => v.ArrivalTime),
+
+                // duration: shortest first => newest arrival first
+                "duration" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                // duration_desc: longest first => oldest arrival first
+                "duration_desc" => viewModels.OrderBy(v => v.ArrivalTime),
+
+                _ => viewModels.OrderBy(v => v.RegNumber),
+            };            
 
             foreach (var vm in viewModels)
                 vm.UpdateParkDuration();
@@ -258,7 +257,7 @@ namespace Garage_2._0.Controllers
 
             // If the user wants a receipt
             if (viewModel.WantReceipt)             
-                return RedirectToAction(nameof(Receipt), receiptViewModel);            
+                return RedirectToAction(nameof(Receipt), receiptViewModel);
             else 
                 return RedirectToAction(nameof(Index));
         }
