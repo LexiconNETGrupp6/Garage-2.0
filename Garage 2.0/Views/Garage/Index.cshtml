@@ -51,6 +51,9 @@
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
     </div> 
 </form>
+<p>
+    Available parking spots: <strong>@ViewBag.AvailableSpots</strong> / @ViewBag.TotalSpots
+</p>
 
 <p>
     <a asp-action="Create" class="btn btn-success">Check in vehicle</a>
@@ -62,6 +65,7 @@
             <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="type">Type</a></th>
             <th><a asp-action="index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="reg-number">RegNumber</a></th>
             <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="arrival-time">ArrivalTime</a></th>
+            <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="ParkingSpot">ParkingSpot</a></th>
             @* <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="duration">Duration</a></th> *@
             <th id="table-durations">Duration</th>
             <th id="table-buttons" class="text-end"></th>
@@ -74,6 +78,7 @@
                 <td>@v.VehicleType</td>
                 <td>@v.RegNumber</td>
                 <td>@v.ArrivalTime</td>
+                <td>@v.ParkingSpot</td>
                 <td>
                     @{v.UpdateParkDuration();}
                     @v.ParkDuration

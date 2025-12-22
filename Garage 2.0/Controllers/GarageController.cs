@@ -9,7 +9,7 @@ namespace Garage_2._0.Controllers
     public class GarageController : Controller
     {
         private readonly GarageContext _context;
-
+        private const int TotalSpots = 10;
         public GarageController(GarageContext context)
         {
             _context = context;
@@ -19,6 +19,9 @@ namespace Garage_2._0.Controllers
         public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
             ViewData["CurrentFilter"] = search;
+
+            ViewBag.TotalSpots = TotalSpots;
+            ViewBag.AvailableSpots = TotalSpots - _context.Vehicle.Count();
 
             var query = _context.Vehicle.AsQueryable();
 
@@ -37,6 +40,7 @@ namespace Garage_2._0.Controllers
                 VehicleType = v.VehicleType,
                 RegNumber = v.RegNumber,
                 ArrivalTime = v.ArrivalTime,
+                ParkingSpot = v.ParkingSpot
             });
 
             return View(viewModels);
@@ -102,6 +106,18 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
+            var usedSpots = await _context.Vehicle.Select(v => v.ParkingSpot).ToListAsync();
+            var freeSpot = Enumerable.Range(1, TotalSpots)
+                         .Except(usedSpots)
+                         .FirstOrDefault();
+            if (freeSpot == 0)
+            {
+                ModelState.AddModelError("", "Sorry, the garage is full!");
+                return View(vehicle);
+            }
+
+            vehicle.ParkingSpot = freeSpot;
+
             var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
             if (string.IsNullOrWhiteSpace(reg))
@@ -132,7 +148,7 @@ namespace Garage_2._0.Controllers
                 vehicle.ArrivalTime = DateTime.Now;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Vehicle checked in successfully.";
+                TempData["Success"] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
                 return RedirectToAction(nameof(Index));
             }
 

@@ -8,6 +8,7 @@ namespace Garage_2._0.Models.ViewModels
         public VehicleType VehicleType { get; set; }
         public string RegNumber { get; set; } = string.Empty;
         public DateTime ArrivalTime { get; set; }
+        public int ParkingSpot { get; set; }
 
         [DisplayName("How long the vehicle has been parked")]
         public String ParkDuration { get; private set; } = string.Empty;
