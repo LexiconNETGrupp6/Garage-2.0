@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
+using Garage_2._0.ConstantStrings;
+using Garage_2._0.Models.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Garage_2._0.Controllers
 {
     public class GarageController : Controller
     {
-        private readonly GarageContext _context;
+        private readonly IVehicleRepository _vehicleRepository; 
         private const int TotalParkingSpots = 10;
-        public GarageController(GarageContext context)
+        public GarageController(IVehicleRepository repository)
         {
-            _context = context;
+            _vehicleRepository = repository;
         }
 
         // GET: Garage
@@ -27,56 +30,65 @@ namespace Garage_2._0.Controllers
 
             ViewData["CurrentFilter"] = search;
 
-            var query = _context.Vehicle.AsQueryable();
+            ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
+            ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
+            ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
+            ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
+            ViewData["BrandSort"] = sortOrder == "brand" ? "brand_desc" : "brand";
+
+            var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search = search.Trim();
-                query = query.Where(v => v.RegNumber.Contains(search));
+                var s = search.Trim();
+
+                var sReg = s.Replace(" ", "").ToUpper();
+
+                query = query.Where(v =>
+                    v.RegNumber.Contains(sReg) ||
+                    v.Brand.Contains(s) ||
+                    v.Model.Contains(s) ||
+                    v.Color.Contains(s)
+                );
             }
 
-            if (!string.IsNullOrWhiteSpace(sortOrder)) {
-                query = SortVehicles(sortOrder, query);
-            }
+            IEnumerable<VehicleViewModel> viewModels = await query
+                .Select(v => new VehicleViewModel {
+                    Id = v.Id,
+                    VehicleType = v.VehicleType,
+                    RegNumber = v.RegNumber,
+                    Brand = v.Brand,
+                    ArrivalTime = v.ArrivalTime,
+                })
+                .ToListAsync();
 
-            IEnumerable<VehicleViewModel> viewModels = query.Select(v => new VehicleViewModel {
-                Id = v.Id,
-                VehicleType = v.VehicleType,
-                RegNumber = v.RegNumber,
-                ArrivalTime = v.ArrivalTime,
-            });
+            viewModels = sortOrder switch {
+                "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
+
+                "reg" => viewModels.OrderBy(v => v.RegNumber),
+                "reg_desc" => viewModels.OrderByDescending(v => v.RegNumber),
+
+                "arrival" => viewModels.OrderBy(v => v.ArrivalTime),
+                "arrival_desc" => viewModels.OrderByDescending(v => v.ArrivalTime),
+
+                // duration: shortest first => newest arrival first
+                "duration" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                // duration_desc: longest first => oldest arrival first
+                "duration_desc" => viewModels.OrderBy(v => v.ArrivalTime),
+
+                "brand" => viewModels.OrderBy(v => v.Brand),
+                "brand_desc" => viewModels.OrderByDescending(v => v.Brand),
+
+                _ => viewModels.OrderBy(v => v.RegNumber),
+            };            
+
+            foreach (var vm in viewModels)
+                vm.UpdateParkDuration();
 
             return View(viewModels);
         }
 
-        public IQueryable<Vehicle> SortVehicles(string sordOrder, IQueryable<Vehicle> vehicles)
-        {
-            var date = DateTime.Now;
-            // Sort based on attribute
-            switch (sordOrder) {
-                case "type":
-                    vehicles = vehicles.OrderBy(v => v.VehicleType.ToString());
-                    break;
-                case "reg-number":
-                    vehicles = vehicles.OrderBy(v => v.RegNumber);
-                    break;
-                case "arrival-time":
-                    vehicles = vehicles.OrderBy(v => v.ArrivalTime.ToString());
-                    break;
-                case "duration":
-                    // Attempts at getting this sorting to work.
-                    // Keeps throwing error that it convert DateTime operations into SQL
-
-                    //vehicles = vehicles.OrderBy(v => DateTime.Now - v.ArrivalTime);
-                    //vehicles = from v in vehicles orderby DateTime.Now.Subtract(v.ArrivalTime) select v;
-                    
-                    //var durations = vehicles.Select(v => new { v.Id, Duration = (date - v.ArrivalTime).ToString() });
-                    //vehicles = vehicles.OrderBy(v => durations.First(d => d.Id == v.Id).Duration);
-                    break;
-            }
-
-            return vehicles;
-        }
 
         // GET: Garage/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -85,8 +97,8 @@ namespace Garage_2._0.Controllers
             {
                 return NotFound();
             }
-
-            var vehicle = await _context.Vehicle
+            
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -107,7 +119,7 @@ namespace Garage_2._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
             int occupiedSpots = await _context.Vehicle.CountAsync();
             if (occupiedSpots >= TotalParkingSpots)
@@ -133,7 +145,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.RegNumber = reg;
 
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -143,8 +155,7 @@ namespace Garage_2._0.Controllers
             if (ModelState.IsValid)
             {
                 vehicle.ArrivalTime = DateTime.Now;
-                _context.Add(vehicle);
-                await _context.SaveChangesAsync();
+                await _vehicleRepository.Add(vehicle);
                 TempData["Success"] = "Vehicle checked in successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -160,7 +171,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _vehicleRepository.FindAsync(id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -197,7 +208,7 @@ namespace Garage_2._0.Controllers
             else
             {
                 vehicle.RegNumber = reg;
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -208,13 +219,12 @@ namespace Garage_2._0.Controllers
             {
                 try
                 {
-                    _context.Update(vehicle);
-                    await _context.SaveChangesAsync();
+                    await _vehicleRepository.Update(vehicle);
                     TempData["Success"] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleExists(vehicle.Id))
+                    if (!await VehicleExists(vehicle.Id))
                     {
                         return NotFound();
                     }
@@ -235,7 +245,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -256,7 +266,7 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
-            var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
+            var vehicle = await _vehicleRepository.FindAsync(viewModel.Id);
             if (vehicle is null)
             {
                 return NotFound();
@@ -268,25 +278,40 @@ namespace Garage_2._0.Controllers
                 ArrivalTime = vehicle.ArrivalTime
             };
 
-            _context.Vehicle.Remove(vehicle);
-            await _context.SaveChangesAsync();
+            await _vehicleRepository.Remove(vehicle);
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
             if (viewModel.WantReceipt)             
-                return RedirectToAction(nameof(Receipt), receiptViewModel);            
+                return RedirectToAction(nameof(Receipt), receiptViewModel);
             else 
                 return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleExists(int id)
+        private async Task<bool> VehicleExists(int id)
         {
-            return _context.Vehicle.Any(e => e.Id == id);
+            return await _vehicleRepository.AnyAsync(e => e.Id == id);
         }
 
         public IActionResult Receipt(ReceiptViewModel viewModel)
         {
             return View(viewModel);
+        }
+        public async Task<IActionResult> Statistics()
+        {
+            var vehicles = await _vehicleRepository.ToListAsync();
+            GarageStatisticsViewModel stats = new GarageStatisticsViewModel
+            {
+                TotalVehicles = vehicles.Count,
+                TotalWheels = vehicles.Sum(v => v.NumberOfWheels),
+                VehiclesByType = vehicles
+                .GroupBy(v => v.VehicleType)
+                .ToDictionary(g => g.Key, g => g.Count()),
+                EstimatedRevenue = vehicles.Sum(v =>
+                (DateTime.Now - v.ArrivalTime).TotalHours * 30)
+            };
+            
+            return View(stats);
         }
     }
 }

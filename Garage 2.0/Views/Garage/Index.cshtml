@@ -10,15 +10,11 @@
 
 @section CustomStyles {
     <style>
-        th:not(#table-buttons):not(#table-durations)::after {
-            content: "↕";
-            float: right;
-            margin-right: 2em;
-            margin-top: 0.5em;
-        }
-
-        th:not(#table-buttons):not(#table-durations):hover {
+        /* Targets 'th' elements that have an 'a' child */
+       th:has(a):hover {
             cursor: pointer;
+            filter: brightness(1.3);
+            text-decoration: underline;
         }
 
         th > a {
@@ -26,8 +22,11 @@
             color: inherit;
             padding: inherit;
             display: inline-block;
-            width: 70%;
-            height: 100%;
+            padding: 1em !important;
+        }
+
+        th {
+            padding: 0 !important;
         }
     </style>
 }
@@ -50,7 +49,7 @@
                name="search"
                value="@ViewData["CurrentFilter"]"
                class="form-control"
-               placeholder="Search by registration number..." />
+               placeholder="Search by reg number, brand, model or color..." />
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
     </div> 
@@ -67,11 +66,47 @@
 <table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
         <tr>
-            <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="type">Type</a></th>
-            <th><a asp-action="index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="reg-number">RegNumber</a></th>
-            <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="arrival-time">ArrivalTime</a></th>
-            @* <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="duration">Duration</a></th> *@
-            <th id="table-durations">Duration</th>
+            <th>
+                <a asp-action="Index" 
+                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["TypeSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.VehicleType)</span><span>↕</span>
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["RegSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["BrandSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.Brand)</span><span>↕</span>
+                </a>
+            </th>
+
+            <th>
+                <a asp-action="Index" 
+                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["ArrivalSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" 
+                    asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-sortOrder="@(ViewData["DurationSort"] as string)"
+                   class="d-flex justify-content-between w-100 h-100">
+                    <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
+                </a>
+            </th>
             <th id="table-buttons" class="text-end"></th>
         </tr>
     </thead>
@@ -81,9 +116,9 @@
             <tr>
                 <td>@v.VehicleType</td>
                 <td>@v.RegNumber</td>
+                <td>@v.Brand</td>
                 <td>@v.ArrivalTime</td>
                 <td>
-                    @{v.UpdateParkDuration();}
                     @v.ParkDuration
                 </td>
                 <td class="text-end">
