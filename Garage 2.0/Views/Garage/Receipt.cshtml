@@ -13,7 +13,7 @@
 
 @{
     double hours = Math.Floor(Model.ParkedDuration.TotalHours);
-    double minutes = Math.Floor(Model.ParkedDuration.TotalMinutes);
+    double minutes = Math.Floor(Model.ParkedDuration.TotalMinutes) % 60;
 }
 
 <div class="container-sm">
@@ -24,18 +24,21 @@
         <p class="card-text"><strong>Arrival Time: </strong><span class="text-end">@Model.ArrivalTime</span></p>
         <p class="card-text"><strong>Checkout Time: </strong><span class="text-end">@Model.CheckOutTime</span></p>
         <p class="card-text"><strong>Parked for: </strong>
+            <span>
             @if (hours > 0) 
             {
-                <span class="text-end">@hours hours</span>
+                <span class="text-end ms-1">@hours hours</span>
             }
-            else @if (minutes > 0)
+            @if (minutes > 0)
             {
-                <span class="text-end">@minutes Minutes</span>
+                <span class="text-end ms-1">@minutes Minutes</span>
             }
+            @* Only displays seconds if parked for < 1 min *@
             else
             {
-                <span class="text-end">@Math.Round(Model.ParkedDuration.TotalSeconds) Seconds</span>
+                <span class="text-end ms-1">@Math.Round(Model.ParkedDuration.TotalSeconds) Seconds</span>
             }
+            </span>
         </p>
         <p class="card-text"><strong>Total Cost: </strong><span class="text-end">@Model.TotalPrice.ToString("C", CultureInfo.CreateSpecificCulture("se-SE"))</span></p>
     </div>
