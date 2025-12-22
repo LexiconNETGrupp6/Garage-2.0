@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Garage_2._0.Models.Repositories
 {
-    public class VehicleRepository
+    public class VehicleRepository : IVehicleRepository
     {
         private readonly GarageContext _context;
 
@@ -33,7 +33,7 @@ namespace Garage_2._0.Models.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> AnyAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) 
+        public async Task<bool> AnyAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default)
             => await _context.Vehicle.AnyAsync(predicate, token);
 
         public async Task<Vehicle?> FirstOrDefaultAsync(Expression<Func<Vehicle, bool>> predicate, CancellationToken token = default) =>
