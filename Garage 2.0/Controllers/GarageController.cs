@@ -1,18 +1,19 @@
+using Garage_2._0.ConstantStrings;
+using Garage_2._0.Data;
+using Garage_2._0.Models;
+using Garage_2._0.Models.Repositories;
+using Garage_2._0.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Garage_2._0.Models;
-using Garage_2._0.Data;
-using Garage_2._0.Models.ViewModels;
-using Garage_2._0.ConstantStrings;
-using Garage_2._0.Models.Repositories;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NuGet.Protocol.Core.Types;
 
 namespace Garage_2._0.Controllers
 {
     public class GarageController : Controller
     {
-        private readonly IVehicleRepository _vehicleRepository;
-
+        private readonly IVehicleRepository _vehicleRepository; 
+        private const int TotalParkingSpots = 10;
         public GarageController(IVehicleRepository repository)
         {
             _vehicleRepository = repository;
@@ -21,6 +22,13 @@ namespace Garage_2._0.Controllers
         // GET: Garage
         public async Task<IActionResult> Index(string? search, string? sortOrder)
         {
+            int occupiedSpots = _vehicleRepository.Count();
+            int availableSpots = TotalParkingSpots - occupiedSpots;
+
+            ViewBag.AvailableSpots = availableSpots;
+            ViewBag.TotalSpots = TotalParkingSpots;
+
+
             ViewData["CurrentFilter"] = search;
 
             ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
@@ -114,6 +122,12 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
+            int occupiedSpots = await _vehicleRepository.CountAsync();
+            if (occupiedSpots >= TotalParkingSpots)
+            {
+                ModelState.AddModelError("", "Garage is full. No available parking spots.");
+            }
+
             var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
             if (string.IsNullOrWhiteSpace(reg))
