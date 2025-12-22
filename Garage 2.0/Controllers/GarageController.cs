@@ -28,6 +28,20 @@ namespace Garage_2._0.Controllers
             ViewBag.AvailableSpots = availableSpots;
             ViewBag.TotalSpots = TotalParkingSpots;
 
+            var occupiedSpotsList = await _vehicleRepository
+                .AsNoTracking()
+                .Select(v => v.ParkingSpot)
+                .ToListAsync();
+
+            var parkingMap = Enumerable.Range(1, TotalParkingSpots)
+                .Select(i => new ParkingSpotViewModel
+                {
+                    SpotNumber = i,
+                    IsOccupied = occupiedSpotsList.Contains(i)
+                })
+                .ToList();
+
+            ViewBag.ParkingMap = parkingMap;
 
             ViewData["CurrentFilter"] = search;            
            
