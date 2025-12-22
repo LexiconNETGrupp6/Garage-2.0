@@ -54,9 +54,6 @@
         <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
     </div> 
 </form>
-<p>
-    Available parking spots: <strong>@ViewBag.AvailableSpots</strong> / @ViewBag.TotalSpots
-</p>
 
 <p style="font-size:1.2em;">
     Available parking spots:
@@ -110,7 +107,10 @@
                     <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
                 </a>
             </th>
-          <th><a asp-action="Index" asp-route-search="@ViewData["CurrentFilter"]" asp-route-sortOrder="ParkingSpot">ParkingSpot</a></th>
+          <th>
+              <a asp-action="Index" 
+              asp-route-search="@ViewData["CurrentFilter"]" 
+              asp-route-sortOrder="ParkingSpot">ParkingSpot</a></th>
             <th id="table-buttons" class="text-end"></th>
         </tr>
     </thead>
@@ -122,10 +122,10 @@
                 <td>@v.RegNumber</td>
                 <td>@v.Brand</td>
                 <td>@v.ArrivalTime</td>
-                <td>@v.ParkingSpot</td>
                 <td>
                     @v.ParkDuration
                 </td>
+                <td>@v.ParkingSpot</td>
                 <td class="text-end">
                     <a asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outline-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-warning">Edit</a>

@@ -29,10 +29,7 @@ namespace Garage_2._0.Controllers
             ViewBag.TotalSpots = TotalParkingSpots;
 
 
-            ViewData["CurrentFilter"] = search;
-
-            ViewBag.TotalSpots = TotalSpots;
-            ViewBag.AvailableSpots = TotalSpots - _context.Vehicle.Count();
+            ViewData["CurrentFilter"] = search;            
            
             ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
             ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
@@ -126,8 +123,8 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
-            var usedSpots = await _context.Vehicle.Select(v => v.ParkingSpot).ToListAsync();
-            var freeSpot = Enumerable.Range(1, TotalSpots)
+            var usedSpots = _vehicleRepository.Vehicles.Select(v => v.ParkingSpot).ToList();
+            var freeSpot = Enumerable.Range(1, TotalParkingSpots)
                          .Except(usedSpots)
                          .FirstOrDefault();
             if (freeSpot == 0)
@@ -173,7 +170,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.ArrivalTime = DateTime.Now;
                 await _vehicleRepository.Add(vehicle);
-                TempData["Success"] = "Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
+                TempData["Success"] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
                 return RedirectToAction(nameof(Index));
             }
 
