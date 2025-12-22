@@ -293,7 +293,8 @@ namespace Garage_2._0.Controllers
             ReceiptViewModel receiptViewModel = new() {
                 VehicleRegNumber = vehicle.RegNumber,
                 VehicleType = vehicle.VehicleType,
-                ArrivalTime = vehicle.ArrivalTime
+                ArrivalTime = vehicle.ArrivalTime,
+                ParkingSpot = vehicle.ParkingSpot
             };
 
             await _vehicleRepository.Remove(vehicle);
