@@ -4,16 +4,17 @@ using Garage_2._0.Models;
 using Garage_2._0.Data;
 using Garage_2._0.Models.ViewModels;
 using Garage_2._0.ConstantStrings;
+using Garage_2._0.Models.Repositories;
 
 namespace Garage_2._0.Controllers
 {
     public class GarageController : Controller
     {
-        private readonly GarageContext _context;
+        private readonly IVehicleRepository _vehicleRepository;
 
-        public GarageController(GarageContext context)
+        public GarageController(IVehicleRepository repository)
         {
-            _context = context;
+            _vehicleRepository = repository;
         }
 
         // GET: Garage
@@ -26,7 +27,7 @@ namespace Garage_2._0.Controllers
             ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
             ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
 
-            var query = _context.Vehicle.AsNoTracking().AsQueryable();
+            var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -77,8 +78,8 @@ namespace Garage_2._0.Controllers
             {
                 return NotFound();
             }
-
-            var vehicle = await _context.Vehicle
+            
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -119,7 +120,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.RegNumber = reg;
 
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -129,8 +130,7 @@ namespace Garage_2._0.Controllers
             if (ModelState.IsValid)
             {
                 vehicle.ArrivalTime = DateTime.Now;
-                _context.Add(vehicle);
-                await _context.SaveChangesAsync();
+                await _vehicleRepository.Add(vehicle);
                 TempData["Success"] = "Vehicle checked in successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -146,7 +146,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _vehicleRepository.FindAsync(id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -183,7 +183,7 @@ namespace Garage_2._0.Controllers
             else
             {
                 vehicle.RegNumber = reg;
-                bool exists = await _context.Vehicle.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
+                bool exists = await _vehicleRepository.AnyAsync(v => v.RegNumber == reg && v.Id != vehicle.Id);
                 if (exists)
                 {
                     ModelState.AddModelError(nameof(vehicle.RegNumber), "This registration number already exists.");
@@ -194,13 +194,12 @@ namespace Garage_2._0.Controllers
             {
                 try
                 {
-                    _context.Update(vehicle);
-                    await _context.SaveChangesAsync();
+                    await _vehicleRepository.Update(vehicle);
                     TempData["Success"] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleExists(vehicle.Id))
+                    if (!await VehicleExists(vehicle.Id))
                     {
                         return NotFound();
                     }
@@ -221,7 +220,7 @@ namespace Garage_2._0.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
+            var vehicle = await _vehicleRepository
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -242,7 +241,7 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(DeleteVehicleViewModel viewModel)
         {
-            var vehicle = await _context.Vehicle.FindAsync(viewModel.Id);
+            var vehicle = await _vehicleRepository.FindAsync(viewModel.Id);
             if (vehicle is null)
             {
                 return NotFound();
@@ -254,8 +253,7 @@ namespace Garage_2._0.Controllers
                 ArrivalTime = vehicle.ArrivalTime
             };
 
-            _context.Vehicle.Remove(vehicle);
-            await _context.SaveChangesAsync();
+            await _vehicleRepository.Remove(vehicle);
             TempData["Success"] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
@@ -265,18 +263,18 @@ namespace Garage_2._0.Controllers
                 return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleExists(int id)
+        private async Task<bool> VehicleExists(int id)
         {
-            return _context.Vehicle.Any(e => e.Id == id);
+            return await _vehicleRepository.AnyAsync(e => e.Id == id);
         }
 
         public IActionResult Receipt(ReceiptViewModel viewModel)
         {
             return View(viewModel);
         }
-        public IActionResult Statistics()
+        public async Task<IActionResult> Statistics()
         {
-            var vehicles = _context.Vehicle.ToList();
+            var vehicles = await _vehicleRepository.ToListAsync();
             GarageStatisticsViewModel stats = new GarageStatisticsViewModel
             {
                 TotalVehicles = vehicles.Count,
