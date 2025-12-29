@@ -177,7 +177,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.ArrivalTime = DateTime.Now;
                 await _vehicleRepository.Add(vehicle);
-                TempData["Success"] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
+                TempData[FeedbackConsts.SUCCESS] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -241,7 +241,7 @@ namespace Garage_2._0.Controllers
                 try
                 {
                     await _vehicleRepository.Update(vehicle);
-                    TempData["Success"] = "Vehicle updated successfully.";
+                    TempData[FeedbackConsts.SUCCESS] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -300,7 +300,7 @@ namespace Garage_2._0.Controllers
             };
 
             await _vehicleRepository.Remove(vehicle);
-            TempData["Success"] = "Vehicle checked out successfully.";
+            TempData[FeedbackConsts.SUCCESS] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
             if (viewModel.WantReceipt)             
