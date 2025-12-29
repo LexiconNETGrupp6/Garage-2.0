@@ -51,6 +51,46 @@
     Available parking spots:
     <strong style="color:@(available > 0 ? "green" : "red")">@ViewBag.AvailableSpots</strong> / @ViewBag.TotalSpots
 </p>
+<h5>Parking Map</h5>
+<div class="mb-3">
+    <span style="
+        display:inline-block;
+        width:20px;
+        height:20px;
+        background-color:#dc3545;
+        margin-right:5px;
+        border-radius:4px;">
+    </span>
+    <strong>Occupied</strong>
+
+    <span style="
+        display:inline-block;
+        width:20px;
+        height:20px;
+        background-color:#28a745;
+        margin-left:20px;
+        margin-right:5px;
+        border-radius:4px;">
+    </span>
+    <strong>Available</strong>
+</div>
+<div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:30px;">
+    @foreach (var spot in ViewBag.ParkingMap)
+    {
+        <div style="
+            width:70px;
+            height:70px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:6px;
+            font-weight:bold;
+            color:white;
+            background-color:@(spot.IsOccupied ? "#dc3545" : "#28a745")">
+            @spot.SpotNumber
+        </div>
+    }
+</div>
 <p>
     <a asp-action="Create" class="btn btn-success">Check in vehicle</a>
 </p>

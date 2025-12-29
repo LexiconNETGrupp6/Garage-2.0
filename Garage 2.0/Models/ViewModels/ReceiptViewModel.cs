@@ -20,5 +20,6 @@ namespace Garage_2._0.Models.ViewModels
 
         [DisplayName("Total price for parking")]
         public double TotalPrice => ParkedDuration.TotalHours * PriceConsts.HOURLY_PARKING_PRICE;
+        public int ParkingSpot { get; set; }
     }
 }

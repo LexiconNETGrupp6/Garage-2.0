@@ -25,6 +25,20 @@ namespace Garage_2._0.Controllers
             ViewBag.AvailableSpots = availableSpots;
             ViewBag.TotalSpots = TotalParkingSpots;
 
+            var occupiedSpotsList = await _vehicleRepository
+                .AsNoTracking()
+                .Select(v => v.ParkingSpot)
+                .ToListAsync();
+
+            var parkingMap = Enumerable.Range(1, TotalParkingSpots)
+                .Select(i => new ParkingSpotViewModel
+                {
+                    SpotNumber = i,
+                    IsOccupied = occupiedSpotsList.Contains(i)
+                })
+                .ToList();
+
+            ViewBag.ParkingMap = parkingMap;
 
             ViewData[FilterConsts.CURRENT_FILTER] = search;            
            
@@ -296,7 +310,8 @@ namespace Garage_2._0.Controllers
             ReceiptViewModel receiptViewModel = new() {
                 VehicleRegNumber = vehicle.RegNumber,
                 VehicleType = vehicle.VehicleType,
-                ArrivalTime = vehicle.ArrivalTime
+                ArrivalTime = vehicle.ArrivalTime,
+                ParkingSpot = vehicle.ParkingSpot
             };
 
             await _vehicleRepository.Remove(vehicle);
