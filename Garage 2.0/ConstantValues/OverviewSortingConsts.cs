@@ -1,6 +1,6 @@
-﻿namespace Garage_2._0.ConstantStrings
+﻿namespace Garage_2._0.ConstantValues
 {
-    public static class OverviewSorting
+    public static class OverviewSortingConsts
     {
         public const string TYPE_SORT = "VehicleTypeSort";
         public const string TYPE_ASC = "type_asc";

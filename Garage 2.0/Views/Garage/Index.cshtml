@@ -1,4 +1,4 @@
-@using Garage_2._0.ConstantStrings
+@using Garage_2._0.ConstantValues
 @model IEnumerable<VehicleViewModel>
 
 @{
@@ -61,7 +61,7 @@
             <th>
                 <a asp-action="Index" 
                     asp-route-search="@ViewData["CurrentFilter"]"
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.TYPE_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.TYPE_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.VehicleType)</span><span>↕</span>
                 </a>
@@ -69,7 +69,7 @@
             <th>
                 <a asp-action="Index"
                    asp-route-search="@ViewData["CurrentFilter"]"
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.REG_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.REG_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
                 </a>
@@ -77,7 +77,7 @@
             <th>
                 <a asp-action="Index"
                    asp-route-search="@ViewData["CurrentFilter"]"
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.BRAND_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.BRAND_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.Brand)</span><span>↕</span>
                 </a>
@@ -86,7 +86,7 @@
             <th>
                 <a asp-action="Index" 
                    asp-route-search="@ViewData["CurrentFilter"]"
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.ARRIVAL_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.ARRIVAL_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
                 </a>
@@ -94,7 +94,7 @@
             <th>
                 <a asp-action="Index" 
                    asp-route-search="@ViewData["CurrentFilter"]"
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.DURATION_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.DURATION_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
                 </a>
@@ -102,7 +102,7 @@
             <th>
                 <a asp-action="Index" 
                    asp-route-search="@ViewData["CurrentFilter"]" 
-                   asp-route-sortOrder="@(ViewData[OverviewSorting.SPOT_SORT] as string)"
+                   asp-route-sortOrder="@(ViewData[OverviewSortingConsts.SPOT_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ParkingSpot)</span><span>↕</span>
                 </a>

@@ -1,4 +1,4 @@
-using Garage_2._0.ConstantStrings;
+using Garage_2._0.ConstantValues;
 using Garage_2._0.Models;
 using Garage_2._0.Models.Repositories;
 using Garage_2._0.Models.ViewModels;
@@ -28,18 +28,18 @@ namespace Garage_2._0.Controllers
 
             ViewData["CurrentFilter"] = search;            
            
-            ViewData[OverviewSorting.TYPE_SORT] = sortOrder == OverviewSorting.TYPE_ASC ? 
-                OverviewSorting.TYPE_DESC : OverviewSorting.TYPE_ASC;
-            ViewData[OverviewSorting.REG_SORT] = sortOrder == OverviewSorting.REG_ASC ?
-                OverviewSorting.REG_DESC : OverviewSorting.REG_ASC;
-            ViewData[OverviewSorting.ARRIVAL_SORT] = sortOrder == OverviewSorting.ARRIVAL_ASC ?
-                OverviewSorting.ARRIVAL_DESC : OverviewSorting.ARRIVAL_ASC;
-            ViewData[OverviewSorting.DURATION_SORT] = sortOrder == OverviewSorting.DURATION_ASC ?
-                OverviewSorting.DURATION_DESC : OverviewSorting.DURATION_ASC;
-            ViewData[OverviewSorting.BRAND_SORT] = sortOrder == OverviewSorting.BRAND_ASC ?
-                OverviewSorting.BRAND_DESC : OverviewSorting.BRAND_ASC;
-            ViewData[OverviewSorting.SPOT_SORT] = sortOrder == OverviewSorting.SPOT_ASC ?
-                OverviewSorting.SPOT_DESC : OverviewSorting.SPOT_ASC;
+            ViewData[OverviewSortingConsts.TYPE_SORT] = sortOrder == OverviewSortingConsts.TYPE_ASC ? 
+                OverviewSortingConsts.TYPE_DESC : OverviewSortingConsts.TYPE_ASC;
+            ViewData[OverviewSortingConsts.REG_SORT] = sortOrder == OverviewSortingConsts.REG_ASC ?
+                OverviewSortingConsts.REG_DESC : OverviewSortingConsts.REG_ASC;
+            ViewData[OverviewSortingConsts.ARRIVAL_SORT] = sortOrder == OverviewSortingConsts.ARRIVAL_ASC ?
+                OverviewSortingConsts.ARRIVAL_DESC : OverviewSortingConsts.ARRIVAL_ASC;
+            ViewData[OverviewSortingConsts.DURATION_SORT] = sortOrder == OverviewSortingConsts.DURATION_ASC ?
+                OverviewSortingConsts.DURATION_DESC : OverviewSortingConsts.DURATION_ASC;
+            ViewData[OverviewSortingConsts.BRAND_SORT] = sortOrder == OverviewSortingConsts.BRAND_ASC ?
+                OverviewSortingConsts.BRAND_DESC : OverviewSortingConsts.BRAND_ASC;
+            ViewData[OverviewSortingConsts.SPOT_SORT] = sortOrder == OverviewSortingConsts.SPOT_ASC ?
+                OverviewSortingConsts.SPOT_DESC : OverviewSortingConsts.SPOT_ASC;
 
             var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
@@ -69,25 +69,25 @@ namespace Garage_2._0.Controllers
                 .ToListAsync();
 
             viewModels = sortOrder switch {
-                OverviewSorting.TYPE_ASC => viewModels.OrderBy(v => v.VehicleType.ToString()),
-                OverviewSorting.TYPE_DESC => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
+                OverviewSortingConsts.TYPE_ASC => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                OverviewSortingConsts.TYPE_DESC => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
 
-                OverviewSorting.REG_ASC => viewModels.OrderBy(v => v.RegNumber),
-                OverviewSorting.REG_DESC => viewModels.OrderByDescending(v => v.RegNumber),
+                OverviewSortingConsts.REG_ASC => viewModels.OrderBy(v => v.RegNumber),
+                OverviewSortingConsts.REG_DESC => viewModels.OrderByDescending(v => v.RegNumber),
 
-                OverviewSorting.ARRIVAL_ASC => viewModels.OrderBy(v => v.ArrivalTime),
-                OverviewSorting.ARRIVAL_DESC => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSortingConsts.ARRIVAL_ASC => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSortingConsts.ARRIVAL_DESC => viewModels.OrderByDescending(v => v.ArrivalTime),
 
                 // duration: shortest first => newest arrival first
-                OverviewSorting.DURATION_ASC => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSortingConsts.DURATION_ASC => viewModels.OrderByDescending(v => v.ArrivalTime),
                 // duration_desc: longest first => oldest arrival first
-                OverviewSorting.DURATION_DESC => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSortingConsts.DURATION_DESC => viewModels.OrderBy(v => v.ArrivalTime),
 
-                OverviewSorting.BRAND_ASC => viewModels.OrderBy(v => v.Brand),
-                OverviewSorting.BRAND_DESC => viewModels.OrderByDescending(v => v.Brand),
+                OverviewSortingConsts.BRAND_ASC => viewModels.OrderBy(v => v.Brand),
+                OverviewSortingConsts.BRAND_DESC => viewModels.OrderByDescending(v => v.Brand),
 
-                OverviewSorting.SPOT_ASC => viewModels.OrderBy(v => v.ParkingSpot),
-                OverviewSorting.SPOT_DESC => viewModels.OrderByDescending(v => v.ParkingSpot),
+                OverviewSortingConsts.SPOT_ASC => viewModels.OrderBy(v => v.ParkingSpot),
+                OverviewSortingConsts.SPOT_DESC => viewModels.OrderByDescending(v => v.ParkingSpot),
 
                 _ => viewModels.OrderBy(v => v.RegNumber),
             };            
