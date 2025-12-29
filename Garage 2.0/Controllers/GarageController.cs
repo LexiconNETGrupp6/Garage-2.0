@@ -1,12 +1,9 @@
 using Garage_2._0.ConstantStrings;
-using Garage_2._0.Data;
 using Garage_2._0.Models;
 using Garage_2._0.Models.Repositories;
 using Garage_2._0.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using NuGet.Protocol.Core.Types;
 
 namespace Garage_2._0.Controllers
 {
@@ -31,12 +28,18 @@ namespace Garage_2._0.Controllers
 
             ViewData["CurrentFilter"] = search;            
            
-            ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
-            ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
-            ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
-            ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
-            ViewData["BrandSort"] = sortOrder == "brand" ? "brand_desc" : "brand";
-            ViewData["SpotSort"] = sortOrder == "spot" ? "spot_desc" : "spot";
+            ViewData[OverviewSorting.TYPE_SORT] = sortOrder == OverviewSorting.TYPE_ASC ? 
+                OverviewSorting.TYPE_DESC : OverviewSorting.TYPE_ASC;
+            ViewData[OverviewSorting.REG_SORT] = sortOrder == OverviewSorting.REG_ASC ?
+                OverviewSorting.REG_DESC : OverviewSorting.REG_ASC;
+            ViewData[OverviewSorting.ARRIVAL_SORT] = sortOrder == OverviewSorting.ARRIVAL_ASC ?
+                OverviewSorting.ARRIVAL_DESC : OverviewSorting.ARRIVAL_ASC;
+            ViewData[OverviewSorting.DURATION_SORT] = sortOrder == OverviewSorting.DURATION_ASC ?
+                OverviewSorting.DURATION_DESC : OverviewSorting.DURATION_ASC;
+            ViewData[OverviewSorting.BRAND_SORT] = sortOrder == OverviewSorting.BRAND_ASC ?
+                OverviewSorting.BRAND_DESC : OverviewSorting.BRAND_ASC;
+            ViewData[OverviewSorting.SPOT_SORT] = sortOrder == OverviewSorting.SPOT_ASC ?
+                OverviewSorting.SPOT_DESC : OverviewSorting.SPOT_ASC;
 
             var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
@@ -66,25 +69,25 @@ namespace Garage_2._0.Controllers
                 .ToListAsync();
 
             viewModels = sortOrder switch {
-                "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
-                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
+                OverviewSorting.TYPE_ASC => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                OverviewSorting.TYPE_DESC => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
 
-                "reg" => viewModels.OrderBy(v => v.RegNumber),
-                "reg_desc" => viewModels.OrderByDescending(v => v.RegNumber),
+                OverviewSorting.REG_ASC => viewModels.OrderBy(v => v.RegNumber),
+                OverviewSorting.REG_DESC => viewModels.OrderByDescending(v => v.RegNumber),
 
-                "arrival" => viewModels.OrderBy(v => v.ArrivalTime),
-                "arrival_desc" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSorting.ARRIVAL_ASC => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSorting.ARRIVAL_DESC => viewModels.OrderByDescending(v => v.ArrivalTime),
 
                 // duration: shortest first => newest arrival first
-                "duration" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSorting.DURATION_ASC => viewModels.OrderByDescending(v => v.ArrivalTime),
                 // duration_desc: longest first => oldest arrival first
-                "duration_desc" => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSorting.DURATION_DESC => viewModels.OrderBy(v => v.ArrivalTime),
 
-                "brand" => viewModels.OrderBy(v => v.Brand),
-                "brand_desc" => viewModels.OrderByDescending(v => v.Brand),
+                OverviewSorting.BRAND_ASC => viewModels.OrderBy(v => v.Brand),
+                OverviewSorting.BRAND_DESC => viewModels.OrderByDescending(v => v.Brand),
 
-                "spot" => viewModels.OrderBy(v => v.ParkingSpot),
-                "spot_desc" => viewModels.OrderByDescending(v => v.ParkingSpot),
+                OverviewSorting.SPOT_ASC => viewModels.OrderBy(v => v.ParkingSpot),
+                OverviewSorting.SPOT_DESC => viewModels.OrderByDescending(v => v.ParkingSpot),
 
                 _ => viewModels.OrderBy(v => v.RegNumber),
             };            
