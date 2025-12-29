@@ -329,7 +329,7 @@ namespace Garage_2._0.Controllers
                 .GroupBy(v => v.VehicleType)
                 .ToDictionary(g => g.Key, g => g.Count()),
                 EstimatedRevenue = vehicles.Sum(v =>
-                (DateTime.Now - v.ArrivalTime).TotalHours * PriceConsts.PricePerHour)
+                (DateTime.Now - v.ArrivalTime).TotalHours * PriceConsts.HOURLY_PARKING_PRICE)
             };
             
             return View(stats);

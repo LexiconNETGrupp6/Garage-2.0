@@ -2,6 +2,6 @@
 {
     public class PriceConsts
     {
-        public const double PricePerHour = 30;
+        public const double HOURLY_PARKING_PRICE = 30;
     }
 }

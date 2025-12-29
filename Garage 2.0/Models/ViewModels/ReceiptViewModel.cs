@@ -21,6 +21,6 @@ namespace Garage_2._0.Models.ViewModels
         public TimeSpan ParkedDuration => CheckOutTime.Subtract(ArrivalTime);
 
         [DisplayName("Total price for parking")]
-        public double TotalPrice => ParkedDuration.TotalHours * PriceConsts.PricePerHour;
+        public double TotalPrice => ParkedDuration.TotalHours * PriceConsts.HOURLY_PARKING_PRICE;
     }
 }
