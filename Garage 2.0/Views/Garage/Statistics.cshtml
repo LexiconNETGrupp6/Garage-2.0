@@ -1,0 +1,37 @@
+﻿@using System.Globalization
+@model Garage_2._0.Models.ViewModels.GarageStatisticsViewModel
+<h2 class="mb-4">Garage Statistics</h2>
+
+<div class="d-flex gap-4">
+    <div class="alert alert-primary">
+        <strong>Total vehicles:</strong> @Model.TotalVehicles
+    </div>
+    <div class="alert alert-success">
+        <strong>Total wheels:</strong> @Model.TotalWheels
+    </div>
+    <div class="alert alert-info">
+        <strong>Estimated Revenue:</strong> @Model.EstimatedRevenue.ToString("C", CultureInfo.CreateSpecificCulture("se-SE"))
+    </div>
+</div>
+
+<h4>Vehicles by type</h4>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Vehicle Type</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.VehiclesByType)
+        {
+            <tr>
+                <td>@item.Key</td>
+                <td>@item.Value</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back</a>

@@ -4,6 +4,7 @@ using Garage_2._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    partial class GarageContextModelSnapshot : ModelSnapshot
+    [Migration("20251222103222_AddParkingSpotToVehicle")]
+    partial class AddParkingSpotToVehicle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,72 +73,72 @@ namespace Garage_2._0.Migrations
                         new
                         {
                             Id = 1,
-                            ArrivalTime = new DateTime(2025, 12, 28, 12, 43, 12, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "Volvo",
                             Color = "Red",
                             Model = "V70",
                             NumberOfWheels = 4,
-                            ParkingSpot = 1,
+                            ParkingSpot = 0,
                             RegNumber = "ABC123",
                             VehicleType = 0
                         },
                         new
                         {
                             Id = 2,
-                            ArrivalTime = new DateTime(2025, 12, 29, 11, 42, 12, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "East Marine",
                             Color = "Yellow",
                             Model = "Viking Line",
                             NumberOfWheels = 0,
-                            ParkingSpot = 2,
+                            ParkingSpot = 0,
                             RegNumber = "LGH436",
                             VehicleType = 4
                         },
                         new
                         {
                             Id = 3,
-                            ArrivalTime = new DateTime(2025, 12, 29, 12, 25, 23, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "Volvo",
                             Color = "Red",
                             Model = "V7900",
                             NumberOfWheels = 8,
-                            ParkingSpot = 5,
+                            ParkingSpot = 0,
                             RegNumber = "AHC745",
                             VehicleType = 2
                         },
                         new
                         {
                             Id = 4,
-                            ArrivalTime = new DateTime(2025, 12, 29, 5, 5, 5, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "Teesla",
                             Color = "White",
                             Model = "X",
                             NumberOfWheels = 4,
-                            ParkingSpot = 6,
+                            ParkingSpot = 0,
                             RegNumber = "KAK156",
                             VehicleType = 0
                         },
                         new
                         {
                             Id = 5,
-                            ArrivalTime = new DateTime(2025, 12, 28, 12, 43, 12, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "Scania",
                             Color = "Blue",
                             Model = "G-series",
                             NumberOfWheels = 6,
-                            ParkingSpot = 8,
+                            ParkingSpot = 0,
                             RegNumber = "IKA71U",
                             VehicleType = 3
                         },
                         new
                         {
                             Id = 6,
-                            ArrivalTime = new DateTime(2025, 12, 28, 3, 43, 11, 0, DateTimeKind.Unspecified),
+                            ArrivalTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Brand = "Mercedez",
                             Color = "Green",
                             Model = "L420",
                             NumberOfWheels = 2,
-                            ParkingSpot = 10,
+                            ParkingSpot = 0,
                             RegNumber = "ÅJAUIV",
                             VehicleType = 1
                         });
