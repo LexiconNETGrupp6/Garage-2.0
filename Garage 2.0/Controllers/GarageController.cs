@@ -153,7 +153,10 @@ namespace Garage_2._0.Controllers
             {
                 return NotFound();
             }
-            return View(vehicle); 
+
+            ViewBag.ArrivalTime = vehicle.ArrivalTime;
+
+            return View(vehicle);
         }
 
         // POST: Garage/Edit/5
@@ -161,13 +164,14 @@ namespace Garage_2._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RegNumber,VehicleType,Color,Brand,Model,NumberOfWheels")]
+        Vehicle vehicle)
         {
             if (id != vehicle.Id)
             {
                 return NotFound();
             }
-            
+
             var reg = vehicle.RegNumber?.Trim().Replace(" ", "").ToUpper();
 
             if (string.IsNullOrWhiteSpace(reg))

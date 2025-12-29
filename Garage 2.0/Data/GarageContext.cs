@@ -11,6 +11,8 @@ namespace Garage_2._0.Data
         }
 
         public DbSet<Vehicle> Vehicle { get; set; } = default!;
+        public DbSet<ParkingGarage> Garages { get; set; } = default!;
+        public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +26,21 @@ namespace Garage_2._0.Data
                 new Vehicle { Id = 5, RegNumber = "IKA71U", VehicleType = VehicleType.Truck, Color = "Blue", Brand = "Scania", Model = "G-series", NumberOfWheels = 6 },
                 new Vehicle { Id = 6, RegNumber = "ÅJAUIV", VehicleType = VehicleType.Motorcycle, Color = "Green", Brand = "Mercedez", Model = "L420", NumberOfWheels = 2 }
             );
+
+            modelBuilder.Entity<ParkingGarage>(entity =>
+            {
+                entity.HasKey(g => g.Id);
+                entity.Property(g => g.Name).HasMaxLength(100);
+                entity.Property(g => g.LayoutJson).IsRequired();
+            });
+
+            modelBuilder.Entity<ParkingSpot>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.HasIndex(s => new { s.GarageId, s.Floor, s.Row, s.Column }).IsUnique();
+                entity.HasOne(s => s.Garage).WithMany(g => g.Spots).HasForeignKey(s => s.GarageId);
+            });
+
         }
     }
 }

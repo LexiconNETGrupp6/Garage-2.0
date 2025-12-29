@@ -10,7 +10,10 @@
 <div class="row card shadow-sm">
     <div class="col-md-4 card-body">
         <form asp-action="Edit">
-            <input type="hidden" asp-for="ArrivalTime" />
+            <div class="form-group">
+                <label asp-for="ArrivalTime" class="control-label"></label>
+                <input type="text" class="form-control-plaintext" value="@ViewBag.ArrivalTime" readonly />
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
