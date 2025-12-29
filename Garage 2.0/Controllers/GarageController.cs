@@ -26,7 +26,7 @@ namespace Garage_2._0.Controllers
             ViewBag.TotalSpots = TotalParkingSpots;
 
 
-            ViewData["CurrentFilter"] = search;            
+            ViewData[FilterConsts.CURRENT_FILTER] = search;            
            
             ViewData[OverviewSortingConsts.TYPE_SORT] = sortOrder == OverviewSortingConsts.TYPE_ASC ? 
                 OverviewSortingConsts.TYPE_DESC : OverviewSortingConsts.TYPE_ASC;

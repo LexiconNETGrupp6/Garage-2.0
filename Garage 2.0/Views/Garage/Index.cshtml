@@ -39,7 +39,7 @@
         </span>
         <input type="text"
                name="search"
-               value="@ViewData["CurrentFilter"]"
+               value="@ViewData[FilterConsts.CURRENT_FILTER]"
                class="form-control"
                placeholder="Search by reg number, brand, model or color..." />
         <button type="submit" class="btn btn-primary">Search</button>
@@ -60,7 +60,7 @@
         <tr>
             <th>
                 <a asp-action="Index" 
-                    asp-route-search="@ViewData["CurrentFilter"]"
+                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.TYPE_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.VehicleType)</span><span>↕</span>
@@ -68,7 +68,7 @@
             </th>
             <th>
                 <a asp-action="Index"
-                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.REG_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
@@ -76,7 +76,7 @@
             </th>
             <th>
                 <a asp-action="Index"
-                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.BRAND_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.Brand)</span><span>↕</span>
@@ -85,7 +85,7 @@
 
             <th>
                 <a asp-action="Index" 
-                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.ARRIVAL_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
@@ -93,7 +93,7 @@
             </th>
             <th>
                 <a asp-action="Index" 
-                   asp-route-search="@ViewData["CurrentFilter"]"
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.DURATION_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
@@ -101,7 +101,7 @@
             </th>
             <th>
                 <a asp-action="Index" 
-                   asp-route-search="@ViewData["CurrentFilter"]" 
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]" 
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.SPOT_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
                     <span>@Html.DisplayNameFor(model => model.ParkingSpot)</span><span>↕</span>

@@ -2,5 +2,6 @@
 {
     public class FilterConsts
     {
+        public const string CURRENT_FILTER = "CurrentFilter";
     }
 }
