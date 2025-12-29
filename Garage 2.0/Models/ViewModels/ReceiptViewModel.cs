@@ -13,9 +13,7 @@ namespace Garage_2._0.Models.ViewModels
         public DateTime ArrivalTime { get; set; }
 
         [DisplayName("Time of checkout")]
-        public DateTime CheckOutTime { get; set; } = DateTime.Now;
-
-        [Range(5, 200)]        
+        public DateTime CheckOutTime { get; set; } = DateTime.Now;      
 
         [DisplayName("Whole parking duration")]
         public TimeSpan ParkedDuration => CheckOutTime.Subtract(ArrivalTime);
