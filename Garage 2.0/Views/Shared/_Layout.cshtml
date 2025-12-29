@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Garage_2._0.ConstantValues
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -36,18 +37,18 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @if (TempData["Success"] != null)
+            @if (TempData[FeedbackConsts.SUCCESS] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
-                    @TempData["Success"]
+                    @TempData[FeedbackConsts.SUCCESS]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
 
-            @if (TempData["Error"] != null)
+            @if (TempData[FeedbackConsts.ERROR] != null)
             {
                 <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
-                    @TempData["Error"]
+                    @TempData[FeedbackConsts.ERROR]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
