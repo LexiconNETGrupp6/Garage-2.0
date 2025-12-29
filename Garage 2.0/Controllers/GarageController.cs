@@ -1,12 +1,9 @@
-using Garage_2._0.ConstantStrings;
-using Garage_2._0.Data;
+using Garage_2._0.ConstantValues;
 using Garage_2._0.Models;
 using Garage_2._0.Models.Repositories;
 using Garage_2._0.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using NuGet.Protocol.Core.Types;
 
 namespace Garage_2._0.Controllers
 {
@@ -43,14 +40,20 @@ namespace Garage_2._0.Controllers
 
             ViewBag.ParkingMap = parkingMap;
 
-            ViewData["CurrentFilter"] = search;            
+            ViewData[FilterConsts.CURRENT_FILTER] = search;            
            
-            ViewData["TypeSort"] = sortOrder == "type" ? "type_desc" : "type";
-            ViewData["RegSort"] = sortOrder == "reg" ? "reg_desc" : "reg";
-            ViewData["ArrivalSort"] = sortOrder == "arrival" ? "arrival_desc" : "arrival";
-            ViewData["DurationSort"] = sortOrder == "duration" ? "duration_desc" : "duration";
-            ViewData["BrandSort"] = sortOrder == "brand" ? "brand_desc" : "brand";
-            ViewData["SpotSort"] = sortOrder == "spot" ? "spot_desc" : "spot";
+            ViewData[OverviewSortingConsts.TYPE_SORT] = sortOrder == OverviewSortingConsts.TYPE_ASC ? 
+                OverviewSortingConsts.TYPE_DESC : OverviewSortingConsts.TYPE_ASC;
+            ViewData[OverviewSortingConsts.REG_SORT] = sortOrder == OverviewSortingConsts.REG_ASC ?
+                OverviewSortingConsts.REG_DESC : OverviewSortingConsts.REG_ASC;
+            ViewData[OverviewSortingConsts.ARRIVAL_SORT] = sortOrder == OverviewSortingConsts.ARRIVAL_ASC ?
+                OverviewSortingConsts.ARRIVAL_DESC : OverviewSortingConsts.ARRIVAL_ASC;
+            ViewData[OverviewSortingConsts.DURATION_SORT] = sortOrder == OverviewSortingConsts.DURATION_ASC ?
+                OverviewSortingConsts.DURATION_DESC : OverviewSortingConsts.DURATION_ASC;
+            ViewData[OverviewSortingConsts.BRAND_SORT] = sortOrder == OverviewSortingConsts.BRAND_ASC ?
+                OverviewSortingConsts.BRAND_DESC : OverviewSortingConsts.BRAND_ASC;
+            ViewData[OverviewSortingConsts.SPOT_SORT] = sortOrder == OverviewSortingConsts.SPOT_ASC ?
+                OverviewSortingConsts.SPOT_DESC : OverviewSortingConsts.SPOT_ASC;
 
             var query = _vehicleRepository.AsNoTracking().AsQueryable();
 
@@ -80,25 +83,25 @@ namespace Garage_2._0.Controllers
                 .ToListAsync();
 
             viewModels = sortOrder switch {
-                "type" => viewModels.OrderBy(v => v.VehicleType.ToString()),
-                "type_desc" => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
+                OverviewSortingConsts.TYPE_ASC => viewModels.OrderBy(v => v.VehicleType.ToString()),
+                OverviewSortingConsts.TYPE_DESC => viewModels.OrderByDescending(v => v.VehicleType.ToString()),
 
-                "reg" => viewModels.OrderBy(v => v.RegNumber),
-                "reg_desc" => viewModels.OrderByDescending(v => v.RegNumber),
+                OverviewSortingConsts.REG_ASC => viewModels.OrderBy(v => v.RegNumber),
+                OverviewSortingConsts.REG_DESC => viewModels.OrderByDescending(v => v.RegNumber),
 
-                "arrival" => viewModels.OrderBy(v => v.ArrivalTime),
-                "arrival_desc" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSortingConsts.ARRIVAL_ASC => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSortingConsts.ARRIVAL_DESC => viewModels.OrderByDescending(v => v.ArrivalTime),
 
                 // duration: shortest first => newest arrival first
-                "duration" => viewModels.OrderByDescending(v => v.ArrivalTime),
+                OverviewSortingConsts.DURATION_ASC => viewModels.OrderByDescending(v => v.ArrivalTime),
                 // duration_desc: longest first => oldest arrival first
-                "duration_desc" => viewModels.OrderBy(v => v.ArrivalTime),
+                OverviewSortingConsts.DURATION_DESC => viewModels.OrderBy(v => v.ArrivalTime),
 
-                "brand" => viewModels.OrderBy(v => v.Brand),
-                "brand_desc" => viewModels.OrderByDescending(v => v.Brand),
+                OverviewSortingConsts.BRAND_ASC => viewModels.OrderBy(v => v.Brand),
+                OverviewSortingConsts.BRAND_DESC => viewModels.OrderByDescending(v => v.Brand),
 
-                "spot" => viewModels.OrderBy(v => v.ParkingSpot),
-                "spot_desc" => viewModels.OrderByDescending(v => v.ParkingSpot),
+                OverviewSortingConsts.SPOT_ASC => viewModels.OrderBy(v => v.ParkingSpot),
+                OverviewSortingConsts.SPOT_DESC => viewModels.OrderByDescending(v => v.ParkingSpot),
 
                 _ => viewModels.OrderBy(v => v.RegNumber),
             };            
@@ -188,7 +191,7 @@ namespace Garage_2._0.Controllers
             {
                 vehicle.ArrivalTime = DateTime.Now;
                 await _vehicleRepository.Add(vehicle);
-                TempData["Success"] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
+                TempData[FeedbackConsts.SUCCESS] = $"Vehicle checked in successfully. Parking Spot: {vehicle.ParkingSpot}";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -252,7 +255,7 @@ namespace Garage_2._0.Controllers
                 try
                 {
                     await _vehicleRepository.Update(vehicle);
-                    TempData["Success"] = "Vehicle updated successfully.";
+                    TempData[FeedbackConsts.SUCCESS] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -312,7 +315,7 @@ namespace Garage_2._0.Controllers
             };
 
             await _vehicleRepository.Remove(vehicle);
-            TempData["Success"] = "Vehicle checked out successfully.";
+            TempData[FeedbackConsts.SUCCESS] = "Vehicle checked out successfully.";
 
             // If the user wants a receipt
             if (viewModel.WantReceipt)             
@@ -341,7 +344,7 @@ namespace Garage_2._0.Controllers
                 .GroupBy(v => v.VehicleType)
                 .ToDictionary(g => g.Key, g => g.Count()),
                 EstimatedRevenue = vehicles.Sum(v =>
-                (DateTime.Now - v.ArrivalTime).TotalHours * 30)
+                (DateTime.Now - v.ArrivalTime).TotalHours * PriceConsts.HOURLY_PARKING_PRICE)
             };
             
             return View(stats);
