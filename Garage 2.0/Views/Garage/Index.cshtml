@@ -12,7 +12,7 @@
 @section CustomStyles {
     <style>
         /* Targets 'th' elements that have an 'a' child */
-       th:has(a):hover {
+        th:has(a):hover .display-text {
             cursor: pointer;
             filter: brightness(1.3);
             text-decoration: underline;
@@ -100,10 +100,11 @@
         <tr>
             <th>
                 <a asp-action="Index" 
-                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
+                   asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.TYPE_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.VehicleType)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.VehicleType)</span>
+                    <span>@(ViewData[OverviewSortingConsts.TYPE_SORT] as string == OverviewSortingConsts.TYPE_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
             <th>
@@ -111,7 +112,8 @@
                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.REG_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.RegNumber)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.RegNumber)</span>
+                    <span>@(ViewData[OverviewSortingConsts.REG_SORT] as string == OverviewSortingConsts.REG_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
             <th>
@@ -119,7 +121,8 @@
                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.BRAND_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.Brand)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.Brand)</span>
+                    <span>@(ViewData[OverviewSortingConsts.BRAND_SORT] as string == OverviewSortingConsts.BRAND_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
 
@@ -128,7 +131,8 @@
                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.ARRIVAL_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.ArrivalTime)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.ArrivalTime)</span>
+                    <span>@(ViewData[OverviewSortingConsts.ARRIVAL_SORT] as string == OverviewSortingConsts.ARRIVAL_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
             <th>
@@ -136,7 +140,8 @@
                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]"
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.DURATION_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.ParkDuration)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.ParkDuration)</span>
+                    <span>@(ViewData[OverviewSortingConsts.DURATION_SORT] as string == OverviewSortingConsts.DURATION_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
             <th>
@@ -144,7 +149,8 @@
                    asp-route-search="@ViewData[FilterConsts.CURRENT_FILTER]" 
                    asp-route-sortOrder="@(ViewData[OverviewSortingConsts.SPOT_SORT] as string)"
                    class="d-flex justify-content-between w-100 h-100">
-                    <span>@Html.DisplayNameFor(model => model.ParkingSpot)</span><span>↕</span>
+                    <span class="display-text">@Html.DisplayNameFor(model => model.ParkingSpot)</span>
+                    <span>@(ViewData[OverviewSortingConsts.SPOT_SORT] as string == OverviewSortingConsts.SPOT_ASC ? "↓" : "↑")</span>
                 </a>
             </th>
             <th id="table-buttons" class="text-end"></th>
