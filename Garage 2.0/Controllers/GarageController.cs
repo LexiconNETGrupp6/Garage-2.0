@@ -253,11 +253,25 @@ namespace Garage_2._0.Controllers
                 }
             }
 
+            var existingVehicle = await _vehicleRepository.FindAsync(vehicle.Id);
+            if (existingVehicle == null)
+            {
+                return NotFound();
+            }
+
+            existingVehicle.RegNumber = vehicle.RegNumber;
+            existingVehicle.VehicleType = vehicle.VehicleType;
+            existingVehicle.Color = vehicle.Color;
+            existingVehicle.Brand = vehicle.Brand;
+            existingVehicle.Model = vehicle.Model;
+            existingVehicle.NumberOfWheels = vehicle.NumberOfWheels;
+
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _vehicleRepository.Update(vehicle);
+                    await _vehicleRepository.Update(existingVehicle);
                     TempData[FeedbackConsts.SUCCESS] = "Vehicle updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
